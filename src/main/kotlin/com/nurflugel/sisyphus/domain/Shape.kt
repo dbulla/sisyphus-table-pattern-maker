@@ -1,4 +1,6 @@
-package com.nurflugel.sisyphus
+package com.nurflugel.sisyphus.domain
+
+import com.nurflugel.sisyphus.shapes.SharpSawtooth
 
 
 abstract class Shape(

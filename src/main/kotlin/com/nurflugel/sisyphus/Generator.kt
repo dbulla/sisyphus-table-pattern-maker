@@ -1,17 +1,21 @@
 package com.nurflugel.sisyphus
 
+import com.nurflugel.sisyphus.domain.Point
+import com.nurflugel.sisyphus.domain.Shape
 import com.nurflugel.sisyphus.gui.GuiController
+import com.nurflugel.sisyphus.shapes.Square
 import org.apache.commons.io.FileUtils
 import java.io.File
+import java.time.LocalDateTime
 import kotlin.math.PI
 
 class Generator {
     fun doIt() {
         // take the basic shape - make X copies for 1 revolution.  With each full resolution, reduce the rho by a %
         //    val template = SharpSawtooth()
-        //        val template = TriangleSawtooth()
-        val template = Triangle()
-        //    val template = Square()
+        //    val template = TriangleSawtooth()
+        //    val template = Triangle()
+        val template = Square()
 
         val numberOfCopiesPerRev = template.numberOfCopiesPerRev // how many copies around the circle?
         val offsetPerRevInDegrees = template.offsetPerRevInDegrees // for each run around the circle, how many degrees will the next run be offset?
@@ -26,45 +30,16 @@ class Generator {
         val numberOfCopies = numberOfCopiesPerRev * numberOfRevs
         //    val numberOfCopies = 0
 
-        //             copy the base shape into a new shape, offset by delta theta.
-        //             rho varies from previous shape by rhoRemainingPerRev/nu
-
-        val allShapes = (0..numberOfCopies)
-            .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) }
-        allShapes.forEach { println("allShapes = $it") }
-        println()
-
-        val allSegments = allShapes // generate the offset shape
-            .flatMap { s -> s.segments }
-        allSegments.forEach { println("allSegments = $it") }
-        println()
-
-        val subSegments = allSegments
-            .flatMap { s -> s.generateSubSegments() }
-        subSegments.forEach { println("subSegments = $it") }
-        println()
-
-        val allPoints = subSegments // transform the list of shapes into the list of segments
-            .flatMap { ss -> ss.points(false) } // for triangle, going back to 0 should be going to 360
-        allPoints.forEach { println("allPoints = $it") }
-        println()
+        //copy the base shape into a new shape, offset by delta theta.
+        //rho varies from previous shape by rhoRemainingPerRev/nu
 
 
-        val adjustedPoints = allPoints // convert the segments into points
-            .map { p -> adjustRho(p) }
-        adjustedPoints.forEach { println("adjustedPoints = $it") }
-        println()
-
-        //        val adjustedPoints = (0..numberOfCopies)
-        //                .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) }// generate the offset shape
-        //                .flatMap { s -> s.segments }// transform the list of shapes into the list of segments
-        //                .flatMap { ss -> ss.points(true) }// convert the segments into points
-        //                .map { p -> adjustRho(p) }
-
-        //    val lines = trimPoints(allPoints)
-        //        .map(it->eliminateSuccessiveDupes(it))
-        //        .map { "${it.theta}  ${it.rho}" }
-
+        val adjustedPoints = (0..numberOfCopies)
+            .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) } // generate the offset shape
+            .flatMap { s -> s.segments } // flatten the shapes into their segments
+            .flatMap { s -> s.generateSubSegments() } // transform the list of shapes into the list of segments
+            .flatMap { ss -> ss.points(false) } // convert the segments into points
+            .map { p -> adjustRho(p) } // round rho up or down if it's really close to 0 or 1
 
         val points = trimPoints(adjustedPoints)
         val dedupedPoints = eliminateSuccessiveDupes(points)
@@ -76,34 +51,22 @@ class Generator {
 
         template.addDescriptionLines(lines)
 
-        val linesDegrees = finalPoints
-            .map {
-                "%4.2f".format(it.thetaInDegrees()) + ", \t\t" + "%.3f".format(it.rho) + ",\t\t" + "%.2f".format(it.thetaInRads()
-                                                                                                                ) + ",\t\tx=" + "%.2f".format(
-                    it.x
-                                                                                                                                             ) + ",\t\ty=" + "%.2f".format(
-                    it.y
-                                                                                                                                                                          )
-            }
+        getlinesWithCodeFileAsComments(lines, template)
 
-        getlinesWithCodeFileAsComments(lines, template.javaClass)
-
-        FileUtils.writeLines(File(template.fileName), lines)
-
-        linesDegrees.withIndex().forEach { (i, point) ->
-            println("point[$i] = $point")
-        }
-
+        FileUtils.writeLines(File(template.fileName + LocalDateTime.now()), lines)
+        
         val plotterGui = GuiController(lines, template.fileName)
         plotterGui.showGui()
     }
 
-    /** This may seem strange, but since I play with the files all the time, even saving the config might not let
+    /**
+     * This may seem strange, but since I play with the files all the time, even saving the config might not let
      * me reproduce a track.  Therefore, this serializes the entire shape file as comments in the track!  To recover,
      * just copy/paste the comment into the file name and
      */
-    private fun getlinesWithCodeFileAsComments(lines: MutableList<String>, javaClass: Class<Triangle>): List<String> {
-        val className = javaClass.name.replace('.', '/')
+    private fun getlinesWithCodeFileAsComments(lines: MutableList<String>, shape: Shape
+                                              ): List<String> {
+        val className = shape.javaClass.name.replace('.', '/')
         val fileName = "src/main/kotlin/$className.kt"
         val classFile = File(fileName)
         val fileLines = FileUtils.readLines(classFile)

@@ -1,4 +1,4 @@
-package com.nurflugel.sisyphus
+package com.nurflugel.sisyphus.domain
 
 import java.lang.Math.PI
 
@@ -58,7 +58,8 @@ private constructor(var x: Double, var y: Double, var rho: Double, private var t
         }
 
         fun pointFromDeg(rho: Double, thetaInDegrees: Double, numberOfTurns: Int = 0): Point {
-            return pointFromRad(rho = rho, thetaInRads = thetaInDegrees / 180 * PI + numberOfTurns * 2 * PI,
+            return pointFromRad(rho = rho,
+                                thetaInRads = thetaInDegrees / 180 * PI + numberOfTurns * 2 * PI,
                                 numberOfTurns = numberOfTurns
                                )
         }

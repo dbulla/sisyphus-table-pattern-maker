@@ -1,4 +1,4 @@
-package com.nurflugel.sisyphus
+package com.nurflugel.sisyphus.domain
 
 import java.lang.Math.cos
 import java.lang.Math.sin
@@ -84,8 +84,12 @@ data class LinearSegment(val startPoint: Point, val endPoint: Point, val numberO
     fun withOffset(deltaRho: Double, deltaTheta: Double, iteration: Int): LinearSegment {
         val thetaOffset = deltaTheta * iteration
         val rhoShrinkage = deltaRho * iteration
-        val newStartPoint = Point.pointFromRad(startPoint.rho - rhoShrinkage, startPoint.thetaNoTurns() + thetaOffset * 2)
-        val newEndPoint = Point.pointFromRad(endPoint.rho - rhoShrinkage, endPoint.thetaNoTurns() + thetaOffset * 2)
+        val newStartPoint = Point.pointFromRad(startPoint.rho - rhoShrinkage,
+                                               startPoint.thetaNoTurns() + thetaOffset * 2
+                                              )
+        val newEndPoint = Point.pointFromRad(endPoint.rho - rhoShrinkage,
+                                             endPoint.thetaNoTurns() + thetaOffset * 2
+                                            )
 
         return LinearSegment(newStartPoint, newEndPoint, numberOfSubSegments)
     }

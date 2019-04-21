@@ -1,4 +1,4 @@
-// Template class: com.nurflugel.sisyphus.SharpSawtooth
+// Template class: com.nurflugel.sisyphus.gui.shapes.SharpSawtooth
 // numberOfCopiesPerRev = 30
 // rhoRemainingPerRev = 0.9733333333333334
 // numberOfRevs = 250

@@ -1,16 +1,20 @@
-package com.nurflugel.sisyphus
+package com.nurflugel.sisyphus.shapes
+
+import com.nurflugel.sisyphus.domain.LinearSegment
+import com.nurflugel.sisyphus.domain.Point
+import com.nurflugel.sisyphus.domain.Shape
 
 
-/**  This class makes a shape that looks like this:
+/**  This class makes a shape that spans the table and looks like this (the dot is the table center):
  *                         |
  *    * ---- *             |
- *     \   /               |
+ *     \ . /               |
  *      \/                 |
  *      *
  *
  */
 class Triangle(
-    numberOfCopiesPerRev: Int = 5,
+    numberOfCopiesPerRev: Int = 2,
     rhoRemainingPerRev: Double = 1 - (.03 / 3),
     numberOfRevs: Int = 100,
     offsetPerRevInDegrees: Int = 3,
@@ -29,7 +33,7 @@ class Triangle(
         val point2 = Point.pointFromDeg(rho = 1.0, thetaInDegrees = 120.0)
         val point3 = Point.pointFromDeg(rho = 1.0, thetaInDegrees = 240.0)
         val point4 = Point.pointFromDeg(rho = 1.0, thetaInDegrees = 0.0, numberOfTurns = 1
-                                       ) // notice for this shape we must to to 360, not 0 (wrong direction)
+                                       ) // notice for this shape we must end at 360, not 0 (wrong direction)
 
         // this makes 2 segments
         segments.addAll(mutableListOf(

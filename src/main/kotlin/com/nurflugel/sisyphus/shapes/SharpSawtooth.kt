@@ -1,4 +1,8 @@
-package com.nurflugel.sisyphus
+package com.nurflugel.sisyphus.shapes
+
+import com.nurflugel.sisyphus.domain.LinearSegment
+import com.nurflugel.sisyphus.domain.Point
+import com.nurflugel.sisyphus.domain.Shape
 
 
 /**  This class makes a shape that looks like this:
@@ -8,6 +12,11 @@ package com.nurflugel.sisyphus
  *    |/
  *    *
  *
+ *
+ *
+ *
+ *
+ *    .
  */
 class SharpSawtooth(
     //        numberOfCopiesPerRev: Int = 18,

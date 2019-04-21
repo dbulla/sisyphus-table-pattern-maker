@@ -1,4 +1,4 @@
-package com.nurflugel.sisyphus
+package com.nurflugel.sisyphus.domain
 
 import java.lang.Math.PI
 
