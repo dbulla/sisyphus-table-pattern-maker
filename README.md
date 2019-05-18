@@ -47,3 +47,15 @@ As mentioned the `Generator` uses `Shape`s to create patterns.  Basically, a `Sh
 ### Points
 A `Point` is a single theta-rho coordinate - it gets output as a single line in the `.thr` file
 
+## Can I just write my own generator class and re-use the frameworks?
+Sure - look at com.nurflugel.sisyphus.sunbursts.SunburstGenerator.java as an example - in this case, I'm generating the list of coordinates by a completely different
+algorithm, but calling the GuiController to visualize it.
+
+## Bugs, issues, suggestions
+If you have bugs, please create an issue.  Better yet, create a branch and submit a pull request!
+
+
+Enjoy!  
+
+
+Douglas Bullard
