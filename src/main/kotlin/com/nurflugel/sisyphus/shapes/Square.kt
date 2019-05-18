@@ -5,7 +5,7 @@ import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Shape
 
 
-/**  This class makes a shape that looks like this:
+/**  This class makes a shape that looks like this (the dot is the center of the table):
  *
  *    * ---- *
  *    |  .   |

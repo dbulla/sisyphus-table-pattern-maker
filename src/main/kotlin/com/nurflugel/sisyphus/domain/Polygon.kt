@@ -2,6 +2,9 @@ package com.nurflugel.sisyphus.domain
 
 import java.lang.Math.PI
 
+/**
+ * A bunch of linear segments in a group.  Not used in anything yet...
+ */
 class Polygon(val points: List<Point>,
               numberOfCopiesPerRev: Int,
               rhoRemainingPerRev: Double,

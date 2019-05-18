@@ -3,19 +3,28 @@ package com.nurflugel.sisyphus
 import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Shape
 import com.nurflugel.sisyphus.gui.GuiController
-import com.nurflugel.sisyphus.shapes.Square
+import com.nurflugel.sisyphus.shapes.Triangle
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.time.LocalDateTime
 import kotlin.math.PI
 
 class Generator {
+
+    companion object {
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            Generator().doIt()
+        }
+    }
+    
     fun doIt() {
         // take the basic shape - make X copies for 1 revolution.  With each full resolution, reduce the rho by a %
-        //    val template = SharpSawtooth()
-        //    val template = TriangleSawtooth()
-        //    val template = Triangle()
-        val template = Square()
+        //            val template = SharpSawtooth()
+        //            val template = TriangleSawtooth()
+        val template = Triangle()
+        //        val template = Square()
 
         val numberOfCopiesPerRev = template.numberOfCopiesPerRev // how many copies around the circle?
         val offsetPerRevInDegrees = template.offsetPerRevInDegrees // for each run around the circle, how many degrees will the next run be offset?
@@ -125,7 +134,7 @@ class Generator {
     private fun allNonZero(points: List<Point>, index: Int, numberOfZeroPoints: Int): Boolean {
 
         val allZero = (index..numberOfZeroPoints + index)
-            .all { it -> points[it].isRhoPracticallyZero() }
+            .all { points[it].isRhoPracticallyZero() }
         return ! allZero
     }
 
@@ -143,11 +152,5 @@ class Generator {
         }
     }
 
-    companion object {
 
-        @JvmStatic
-        fun main(args: Array<String>) {
-            Generator().doIt()
-        }
-    }
 }

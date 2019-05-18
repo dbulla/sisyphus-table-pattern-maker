@@ -12,6 +12,7 @@ import com.nurflugel.sisyphus.domain.Shape
  *      \/
  *      *
  *
+ *       . (center of table)
  */
 class TriangleSawtooth(
     //    numberOfCopiesPerRev: Int = 18,

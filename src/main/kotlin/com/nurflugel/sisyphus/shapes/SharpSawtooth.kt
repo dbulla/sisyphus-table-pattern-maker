@@ -16,7 +16,7 @@ import com.nurflugel.sisyphus.domain.Shape
  *
  *
  *
- *    .
+ *    . (center of table)
  */
 class SharpSawtooth(
     //        numberOfCopiesPerRev: Int = 18,
