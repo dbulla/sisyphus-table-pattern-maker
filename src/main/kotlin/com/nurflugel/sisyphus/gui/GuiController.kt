@@ -10,6 +10,7 @@ import java.io.File
 import javax.swing.JFrame
 import javax.swing.JFrame.EXIT_ON_CLOSE
 import javax.swing.JPanel
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -17,8 +18,22 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
 
     private var guiPanel = JPanel()
 
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val filePath = if (args.isNotEmpty() && args.first().startsWith("thrFile=")) args.last().substringAfter("thrFile=")
+            else "/Users/douglas_bullard//Documents/JavaStuff/github/douglasBullard/sisyphus-table-pattern-maker/deltaDemo.thr"
+            println("filePath = $filePath")
+            val lines = FileUtils.readLines(File(filePath))
+            val plotterGui = GuiController(lines, filePath)
+            plotterGui.showGui()
+        }
+
+        const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
+    }
+
     init {
-        val frame = JFrame(fileName)
+        val frame = JFrame("$fileName                    Click any key to close")
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
         frame.preferredSize = Dimension(1200, 1200)
@@ -44,7 +59,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
 
         var previousPoint: Pair<Double, Double>? = null
 
-        val pairs = lines
+        val polarPairs: List<Pair<Double, Double>> = lines
             .asSequence()
             .filter { it.isNotBlank() }
             .map { it.trim() }
@@ -53,6 +68,13 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             .map { convertLineToPair(it) }
             .filter { it != null }
             .map { it !! }
+            .toList()
+
+
+        val expandedPolarPairs = handleDeltaTheta(polarPairs)
+
+        val pairs = expandedPolarPairs
+            // here is where we need to take the pairs of pairs, and deal with delta thetas
             .map { convertToXy(it) }
             .map { convertToScreenCoords(it, scaleFactor, offset) }
             .toList()
@@ -62,6 +84,40 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             }
             previousPoint = currentPoint
         }
+    }
+
+    /**
+     * for every pair and the next pair, see if the delta theta is large enough (> 1 degree or so)
+     * to need to subdivide that pair of pairs into a list of pairs
+     */
+    private fun handleDeltaTheta(polarPairs: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
+        val expandedPairs: MutableList<Pair<Double, Double>> = mutableListOf()
+
+        (0 until polarPairs.size - 1).forEach {
+            val here = polarPairs[it]
+            val there = polarPairs[it + 1]
+            val deltaTheta = there.first - here.first
+            val absoluteDeltaTheta = Math.abs(deltaTheta)
+            if (absoluteDeltaTheta > Companion.maxDeltaTheta) { // we need to transition theta and rho evenly between here and there
+                val expandedList: MutableList<Pair<Double, Double>> = mutableListOf()
+                // find the closest number of iterations so each delta theta approximates maxDeltaTheta
+                val sss = absoluteDeltaTheta / Companion.maxDeltaTheta
+                val toInt = sss.toInt()
+                val numberOfSplits: Int = toInt + 1
+                val newDeltaTheta = deltaTheta / numberOfSplits
+                val newDeltaRho = (there.second - here.second) / numberOfSplits
+                (0 until numberOfSplits).forEach { index ->
+                    val subTheta = here.first + (index * newDeltaTheta)
+                    val subRho = here.second + (index * newDeltaRho)
+                    expandedList.add(Pair(subTheta, subRho))
+                }
+                expandedPairs.addAll(expandedList)
+            } else { // no need to expand
+                expandedPairs.add(here)
+            }
+        }
+        expandedPairs.add(polarPairs.last())
+        return expandedPairs
     }
 
     /** Convert the theta/rho coordinates to XY coordinates */
@@ -93,18 +149,5 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         val g2 = g as Graphics2D
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
         g2.draw(line)
-    }
-
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val filePath = if (args.isNotEmpty() && args.first().startsWith("thrFile=")) args.last().substringAfter("thrFile=")
-            else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/sisyphus-master/thr_paths/dither_hypnogrid.thr"
-            println("filePath = $filePath")
-            val lines = FileUtils.readLines(File(filePath))
-            val plotterGui = GuiController(lines, filePath)
-            plotterGui.showGui()
-        }
-
     }
 }
