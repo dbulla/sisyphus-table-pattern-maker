@@ -90,7 +90,6 @@ data class LinearSegment(val startPoint: Point, val endPoint: Point, val numberO
         val newEndPoint = Point.pointFromRad(endPoint.rho - rhoShrinkage,
                                              endPoint.thetaNoTurns() + thetaOffset * 2
                                             )
-
         return LinearSegment(newStartPoint, newEndPoint, numberOfSubSegments)
     }
 

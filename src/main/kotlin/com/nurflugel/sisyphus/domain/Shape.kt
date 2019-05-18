@@ -2,7 +2,9 @@ package com.nurflugel.sisyphus.domain
 
 import com.nurflugel.sisyphus.shapes.SharpSawtooth
 
-
+/**
+ * Representation of an abstract shape which will be copied and rotated over and over
+ */
 abstract class Shape(
     /**  how many copies around the circle? */
     val numberOfCopiesPerRev: Int = 36,

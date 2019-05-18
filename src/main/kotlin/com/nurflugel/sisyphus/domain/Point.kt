@@ -2,8 +2,10 @@ package com.nurflugel.sisyphus.domain
 
 import java.lang.Math.PI
 
-/** Constructor for points in a Cartesian OR Polar coordinate system.  Named parameters
- * make this easier than you'd think. */
+/**
+ * Constructor for points in a Cartesian OR Polar coordinate system.  Named parameters
+ * make this easier than you'd think.
+ */
 class Point
 private constructor(var x: Double, var y: Double, var rho: Double, private var theta: Double, var numberOfTurns: Int = 0) {
 
