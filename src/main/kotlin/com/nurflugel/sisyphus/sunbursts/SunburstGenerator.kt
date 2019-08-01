@@ -1,10 +1,16 @@
 package com.nurflugel.sisyphus.sunbursts
 
 import com.nurflugel.sisyphus.gui.GuiController
+import com.nurflugel.sisyphus.sunbursts.Direction.INWARDS
+import com.nurflugel.sisyphus.sunbursts.Direction.OUTWARDS
 import org.apache.commons.io.FileUtils
 import java.io.File
 import kotlin.math.PI
 
+enum class Direction {
+    INWARDS, // from the outside in
+    OUTWARDS // from the inside out
+}
 
 class SunburstGenerator {
 
@@ -17,13 +23,15 @@ class SunburstGenerator {
         const val rhoVariance = .1
         const val thetaVariance = PI / 15
 
+
         @JvmStatic
         fun main(args: Array<String>) {
-            SunburstGenerator().doIt()
+            SunburstGenerator().doIt(INWARDS)
         }
     }
 
-    fun doIt() {
+
+    fun doIt(direction: Direction) {
         // Make three successive waves of bursts, largest to smallest
         // each burst will have n arms, which have each arm the center of randomly generated radial lines
         //
@@ -85,17 +93,30 @@ class SunburstGenerator {
         output.add("// thetaVariance= $thetaVariance")
 
         // for each ray, draw from center to end and back
-        output.add("0.0000    0.000") // start at 0,0
+        when (direction) {
+            OUTWARDS -> output.add("0.0000    0.000") // start at 0,0
+            INWARDS  -> output.add("0.0000    1.000") // start at 0,1
+        }
+        
         (0 until allRays.size).forEach {
             val rayN = allRays[it]
-            output.add("${rayN.first}    0.000") // rotate to new theta
-            output.add("${rayN.first}    ${Math.abs(rayN.second)}") // draw the ray out
-            output.add("${rayN.first}    0.000") // draw the ray back in
+            when (direction) {
+                OUTWARDS -> {
+                    output.add("${rayN.first}    0.000") // rotate to new theta
+                    output.add("${rayN.first}    ${Math.abs(rayN.second)}") // draw the ray out
+                    output.add("${rayN.first}    0.000") // draw the ray back in
+                }
+                INWARDS  -> {
+                    output.add("${rayN.first}    1.000") // rotate to new theta while rho =1
+                    output.add("${rayN.first}    ${1.0 - Math.abs(rayN.second * 0.95)}") // draw the ray inwards (but not all the way)
+                    output.add("${rayN.first}    1.000") // draw the ray back out to rho =1
+                }
+            }
         }
 
-        FileUtils.writeLines(File("sunburst.thr"), output)
+        FileUtils.writeLines(File("inwards_sunburst.thr"), output)
 
-        val plotterGui = GuiController(output, "sunburst.thr")
+        val plotterGui = GuiController(output, "inwards_sunburst.thr")
         plotterGui.showGui()
         println("Done!")
 

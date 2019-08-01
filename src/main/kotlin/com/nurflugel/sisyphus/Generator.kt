@@ -45,10 +45,10 @@ class Generator {
 
         val adjustedPoints = (0..numberOfCopies)
             .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) } // generate the offset shape
-            .flatMap { s -> s.segments } // flatten the shapes into their segments
-            .flatMap { s -> s.generateSubSegments() } // transform the list of shapes into the list of segments
-            .flatMap { ss -> ss.points(false) } // convert the segments into points
-            .map { p -> adjustRho(p) } // round rho up or down if it's really close to 0 or 1
+            .flatMap { it.segments } // flatten the shapes into their segments
+            .flatMap { it.generateSubSegments() } // transform the list of shapes into the list of segments
+            .flatMap { it.points(false) } // convert the segments into points
+            .map { adjustRho(it) } // round rho up or down if it's really close to 0 or 1
 
         val points = trimPoints(adjustedPoints)
         val dedupedPoints = eliminateSuccessiveDupes(points)

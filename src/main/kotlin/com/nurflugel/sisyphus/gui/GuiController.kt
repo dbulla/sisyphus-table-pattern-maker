@@ -22,7 +22,9 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         @JvmStatic
         fun main(args: Array<String>) {
             val filePath = if (args.isNotEmpty() && args.first().startsWith("thrFile=")) args.last().substringAfter("thrFile=")
-            else "/Users/douglas_bullard//Documents/JavaStuff/github/douglasBullard/sisyphus-table-pattern-maker/deltaDemo.thr"
+            //            else "/Users/douglas_bullard//Documents/JavaStuff/github/douglasBullard/sisyphus-table-pattern-maker/deltaDemo.thr"
+            //            else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/Schmigneous/focus.thr"
+            else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/crsolomon/1551055361-sun-moon.thr"
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath))
             val plotterGui = GuiController(lines, filePath)

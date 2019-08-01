@@ -10,9 +10,7 @@ class Point
 private constructor(var x: Double, var y: Double, var rho: Double, private var theta: Double, var numberOfTurns: Int = 0) {
 
     /** for all intents and purposes, rho is zero */
-    fun isRhoPracticallyZero(): Boolean {
-        return rho < RHO_PRACTICALLY_ZERO
-    }
+    fun isRhoPracticallyZero() = rho < RHO_PRACTICALLY_ZERO
 
 
     /** for all intents and purposes, rho is zero */
