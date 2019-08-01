@@ -1,94 +1,46 @@
 package com.nurflugel.sisyphus
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 
 class CoroutineTest {
 
     companion object {
-
         @JvmStatic
         fun main(args: Array<String>) {
             CoroutineTest().doIt()
         }
     }
 
-    private val tripletsPool = ThreadPoolExecutor(3, 3, 5L, TimeUnit.SECONDS, LinkedBlockingQueue())
-
-    private suspend fun sum(scheduler: ThreadPoolExecutor): Int = coroutineScope {
-
-        withContext(scheduler.asCoroutineDispatcher()) {
-            val a = async { funA() }
-            val b = async { funB() }
-            val c = async { funC() }
-
-            a.await() + b.await() + c.await()
-        }
-    }
-
-    private fun funA(): Int {
-        println("funA")
-        Thread.sleep(2000L)
-
-        return 1
-
-    }
-
-    private fun funB(): Int {
-        println("funB " + Instant.now())
-        Thread.sleep(3000L)
-        return 2
-    }
-
-    private fun funC(): Int {
-        println("funC")
-        Thread.sleep(5000L)
-        return 3
-    }
-
-    private fun sum2(): Int {
-        var sum = 0
-        runBlocking {
-            val jobA = async { funAA() }
-            val jobB = async { funBB() }
-            runBlocking {
-                sum = jobB.await() + jobA.await()
-            }
-        }
-        return sum
-    }
-
-    private fun funAA(): Int {
-        println("funAA start " + Instant.now().nano)
-        Thread.sleep(5000L)
-        println("funAA end " + Instant.now().nano)
-        return 1
-    }
-
-    private fun funBB(): Int {
-        println("funBB start " + Instant.now().nano)
-        Thread.sleep(3000L)
-        println("funBB end " + Instant.now().nano)
-        return 2
-    }
-
     fun doIt() {
+        val start = Instant.now()
+        println("Starting test")
+        val sum = runBlocking {
+            println("in sum2")
+            var sum = 0
 
-        //        GlobalScope.launch(Dispatchers.Main, CoroutineStart.DEFAULT) {
-
-
-        println("here")
-        val sum2 = sum2()
-        println(">>>>sum2>>$sum2<<<<<<<")
-        GlobalScope.launch {
-            val sum = sum(tripletsPool)
-            println(">>>sum>>>$sum<<<<<<<")
+            println("In launch scope")
+            // these run in the order they're declared
+            val jobA = GlobalScope.async { funC(3) }
+            val jobB = GlobalScope.async { funC(5) }
+            val jobC = GlobalScope.async { funC(2) }
+            sum = jobB.await() + jobA.await() + jobC.await()
+            println("done with launch scope")
+            sum
         }
+        println("sum is $sum, total duration was " + Duration.between(start, Instant.now()))
 
-        //        }
+    }
 
+    private suspend fun funC(delay: Int): Int {
+        val start = Instant.now()
+        println("fun $delay start")
+        delay(delay * 1000L)
+        println("fun $delay end, duration was " + Duration.between(start, Instant.now()))
+        return delay
     }
 }
