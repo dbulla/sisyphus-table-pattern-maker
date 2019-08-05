@@ -1,6 +1,8 @@
 package com.nurflugel.sisyphus
 
 import com.nurflugel.sisyphus.domain.Point
+import com.nurflugel.sisyphus.domain.Point.Companion.isRhoPracticallyOne
+import com.nurflugel.sisyphus.domain.Point.Companion.isRhoPracticallyZero
 import com.nurflugel.sisyphus.domain.Shape
 import com.nurflugel.sisyphus.gui.GuiController
 import com.nurflugel.sisyphus.shapes.Triangle
@@ -107,8 +109,8 @@ class Generator {
         val howCloseToOne = 1.0 - lastPoint.rho
         val howCloseToZero = lastPoint.rho
 
-        if (Point.isRhoPracticallyOne(lastPoint.rho)) return points
-        if (Point.isRhoPracticallyZero(lastPoint.rho)) return points
+        if (isRhoPracticallyOne(lastPoint.rho)) return points
+        if (isRhoPracticallyZero(lastPoint.rho)) return points
 
         val finalRho = when {
             howCloseToOne < howCloseToZero -> 1.0

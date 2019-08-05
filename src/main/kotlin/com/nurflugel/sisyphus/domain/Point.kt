@@ -1,13 +1,19 @@
 package com.nurflugel.sisyphus.domain
 
 import java.lang.Math.PI
+import kotlin.math.*
 
 /**
  * Constructor for points in a Cartesian OR Polar coordinate system.  Named parameters
  * make this easier than you'd think.
  */
 class Point
-private constructor(var x: Double, var y: Double, var rho: Double, private var theta: Double, var numberOfTurns: Int = 0) {
+private constructor(var x: Double,
+                    var y: Double,
+                    var rho: Double,
+                    private var theta: Double,
+                    var numberOfTurns: Int = 0
+                   ) {
 
     /** for all intents and purposes, rho is zero */
     fun isRhoPracticallyZero() = rho < RHO_PRACTICALLY_ZERO
@@ -23,8 +29,8 @@ private constructor(var x: Double, var y: Double, var rho: Double, private var t
         //    println("is ${this.rho}:${this.theta} = ${previousPoint?.rho}:${previousPoint?.theta})?  $result")
         return when {
             previousPoint == null                                                        -> false
-            Math.abs(previousPoint.rho - rho) > RHO_PRACTICALLY_ZERO                     -> false
-            Math.abs(previousPoint.theta - theta) > THETA_PRACTICALLY_ZERO               -> false
+            abs(previousPoint.rho - rho) > RHO_PRACTICALLY_ZERO                          -> false
+            abs(previousPoint.theta - theta) > THETA_PRACTICALLY_ZERO                    -> false
             // if both rhos are zero, they're equal, regardless of theta 
             previousPoint.isRhoPracticallyZero() && previousPoint.isRhoPracticallyZero() -> true
             else                                                                         -> true
@@ -49,8 +55,8 @@ private constructor(var x: Double, var y: Double, var rho: Double, private var t
 
     companion object {
         fun pointFromRad(rho: Double, thetaInRads: Double, numberOfTurns: Int = 0): Point {
-            return Point(x = rho * Math.cos(thetaInRads),
-                         y = rho * Math.sin(thetaInRads),
+            return Point(x = rho * cos(thetaInRads),
+                         y = rho * sin(thetaInRads),
                          rho = rho,
                          theta = thetaInRads,
                          numberOfTurns = numberOfTurns
@@ -65,7 +71,7 @@ private constructor(var x: Double, var y: Double, var rho: Double, private var t
         }
 
         fun pointFromXY(x: Double, y: Double, numberOfTurns: Int = 0): Point {
-            val theta = Math.atan2(y, x)
+            val theta = atan2(y, x)
             val realTheta = when {
                 // if theta is negative, and x and y are also negative, then add 2 pi to get us positive again. IRRITATING!
                 //            x < 0 && y<0 && theta<0 -> theta + 2 * PI
@@ -75,7 +81,7 @@ private constructor(var x: Double, var y: Double, var rho: Double, private var t
 
             return Point(x = x,
                          y = y,
-                         rho = Math.sqrt(x * x + y * y),
+                         rho = sqrt(x * x + y * y),
                          theta = realTheta,
                          numberOfTurns = numberOfTurns
                         )

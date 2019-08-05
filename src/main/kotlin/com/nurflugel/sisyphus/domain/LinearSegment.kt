@@ -20,7 +20,10 @@ import java.lang.Math.sin
  * In contrast, a circle/arc has fixed rho, and needs NO sub-segments in this system
  *
  */
-data class LinearSegment(val startPoint: Point, val endPoint: Point, val numberOfSubSegments: Int) {
+data class LinearSegment(val startPoint: Point,
+                         val endPoint: Point,
+                         val numberOfSubSegments: Int
+                        ) {
 
     /**
      * Decompose the LinearSegment into smaller sub-segments, each of which have no sub-segments.

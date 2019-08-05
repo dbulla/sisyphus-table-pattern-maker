@@ -17,12 +17,12 @@ class CoroutineTest {
     }
 
     //    val numberIterations = 1L
-    val numberIterations = 10L                // 6 s
+    //    val numberIterations = 10L                // 6 s
     //    val numberIterations = 100L               // 7.122S s
-    //    val numberIterations = 1_000L             // 7.19 s
-    //    val numberIterations = 10_000L            // 7.32 s
-    //    val numberIterations = 100_000L           // 8.15 s
-    //    val numberIterations = 1_000_000L         // 16.9 s
+    //        val numberIterations = 1_000L             // 7.19 s
+    //        val numberIterations = 10_000L            // 7.32 s     7.14
+    //        val numberIterations = 100_000L           // 8.15 s     7.27
+    val numberIterations = 1_000_000L         // 16.9 s     10.52
 
     fun doIt() {
         val start = Instant.now()
@@ -54,11 +54,11 @@ class CoroutineTest {
     /** Delay function which sleeps and returns the delay in sec */
     private suspend fun funC(index: Long): Int {
         val start = Instant.now()
-        println("fun $index start $start")
+        //        println("fun $index start $start")
         val delay = Math.random() * 5 + 2
         val timeMillis = (delay * 1000L).toLong()
         delay(timeMillis)
-        println("fun $index end, duration was " + Duration.between(start, Instant.now()))
+        //        println("fun $index end, duration was " + Duration.between(start, Instant.now()))
         return delay.toInt()
     }
 
