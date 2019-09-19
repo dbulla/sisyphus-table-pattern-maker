@@ -12,7 +12,8 @@ class CoroutineTest {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            CoroutineTest().doIt()
+            val numIterations = listOf(1L, 10L, 100L, 1_000L, 10_000L, 100_000L, 1_000_000L)
+            numIterations.forEach(CoroutineTest()::doIt)
         }
     }
 
@@ -22,20 +23,20 @@ class CoroutineTest {
     //        val numberIterations = 1_000L             // 7.19 s
     //        val numberIterations = 10_000L            // 7.32 s     7.14
     //        val numberIterations = 100_000L           // 8.15 s     7.27
-    val numberIterations = 1_000_000L         // 16.9 s     10.52
+    //    val numberIterations = 1_000_000L         // 16.9 s     10.52
 
-    fun doIt() {
+    fun doIt(numberIterations: Long) {
         val start = Instant.now()
 
-        println("Starting test with $numberIterations iterations")
+        println("\nStarting test with $numberIterations iterations")
         val sum = runBlocking {
-            println("in sum2")
+            //            println("in sum2")
             val sum: Int = (0L until numberIterations)
                 .map { GlobalScope.async { funC(it) } }
                 .map { it.await() } // this returns a value which we will sum
                 .sum()
 
-            println("In launch scope")
+            //            println("In launch scope")
             // these run in the order they're declared
             //            val jobA = GlobalScope.async { funC(3) }
             //            val jobB = GlobalScope.async { funC(5) }
@@ -62,15 +63,15 @@ class CoroutineTest {
         return delay.toInt()
     }
 
-    fun doItWithThreads() {
+    fun doItWithThreads(numberIterations: Long) {
         val start = Instant.now()
 
         println("Starting test with $numberIterations iterations")
         val sum = runBlocking {
-            println("in sum2")
+            //            println("in sum2T")
             var sum = 0
 
-            println("In launch scope")
+            //            println("In launch scope")
             // these run in the order they're declared
             //            val jobA = GlobalScope.async { funC(3) }
             //            val jobB = GlobalScope.async { funC(5) }
