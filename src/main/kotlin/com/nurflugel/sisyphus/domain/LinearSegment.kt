@@ -1,7 +1,6 @@
 package com.nurflugel.sisyphus.domain
 
-import java.lang.Math.cos
-import java.lang.Math.sin
+import kotlin.math.sin
 
 
 /** A LinearSegment is part of a Shape - think of one side of a rectangle.  It is one intrinsic, STRAIGHT stroke which can
@@ -64,8 +63,8 @@ data class LinearSegment(val startPoint: Point,
         val startRho: Double
         val endRho: Double
         if (slope.isInfinite()) {
-            startRho = startPoint.x / cos(startTheta)
-            endRho = startPoint.x / cos(endTheta)
+            startRho = startPoint.x / kotlin.math.cos(startTheta)
+            endRho = startPoint.x / kotlin.math.cos(endTheta)
         } else {
             startRho = findRho(yIntercept, slope, startTheta)
             endRho = findRho(yIntercept, slope, endTheta)
@@ -77,7 +76,7 @@ data class LinearSegment(val startPoint: Point,
     }
 
     private fun findRho(yIntercept: Double, slope: Double, theta: Double): Double {
-        val divisor = slope * cos(theta) - sin(theta)
+        val divisor = slope * kotlin.math.cos(theta) - sin(theta)
         val rho = - yIntercept / divisor
 
         return rho

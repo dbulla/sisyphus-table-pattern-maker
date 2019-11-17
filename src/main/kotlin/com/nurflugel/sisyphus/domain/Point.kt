@@ -24,7 +24,6 @@ private constructor(var x: Double,
         return rho > PRACTICALLY_ONE
     }
 
-
     fun isEqual(previousPoint: Point?): Boolean {
         //    println("is ${this.rho}:${this.theta} = ${previousPoint?.rho}:${previousPoint?.theta})?  $result")
         return when {

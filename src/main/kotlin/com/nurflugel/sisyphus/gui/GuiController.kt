@@ -56,6 +56,8 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         // draw line from previous point to this point
         // current point becomes previous point
 
+        val graphics2D = getGraphicsContext().graphics as Graphics2D
+
         val scaleFactor = getGraphicsContext().size.height / 2 // 2 * rho=1 gives two 
         val offset = scaleFactor
 
@@ -79,11 +81,11 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             // here is where we need to take the pairs of pairs, and deal with delta thetas
             .map { convertToXy(it) }
             .map { convertToScreenCoords(it, scaleFactor, offset) }
+            .filter { isUsable(it) }
             .toList()
+
         for (currentPoint in pairs) {
-            if (previousPoint != null) {
-                plot(previousPoint, currentPoint)
-            }
+            plot(previousPoint, currentPoint, graphics2D)
             previousPoint = currentPoint
         }
     }
@@ -100,10 +102,10 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             val there = polarPairs[it + 1]
             val deltaTheta = there.first - here.first
             val absoluteDeltaTheta = Math.abs(deltaTheta)
-            if (absoluteDeltaTheta > Companion.maxDeltaTheta) { // we need to transition theta and rho evenly between here and there
+            if (absoluteDeltaTheta > maxDeltaTheta) { // we need to transition theta and rho evenly between here and there
                 val expandedList: MutableList<Pair<Double, Double>> = mutableListOf()
                 // find the closest number of iterations so each delta theta approximates maxDeltaTheta
-                val sss = absoluteDeltaTheta / Companion.maxDeltaTheta
+                val sss = absoluteDeltaTheta / maxDeltaTheta
                 val toInt = sss.toInt()
                 val numberOfSplits: Int = toInt + 1
                 val newDeltaTheta = deltaTheta / numberOfSplits
@@ -146,10 +148,25 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
     }
 
     /** Draw a line in the context between the two points */
-    private fun plot(previousPoint: Pair<Double, Double>, currentPoint: Pair<Double, Double>) {
-        val g = getGraphicsContext().graphics
-        val g2 = g as Graphics2D
+    private fun plot(possiblePreviousPoint: Pair<Double, Double>?,
+                     currentPoint: Pair<Double, Double>,
+                     graphics: Graphics2D
+                    ) {
+        val previousPoint = when {
+            isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
+            else                            -> currentPoint
+        }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
-        g2.draw(line)
+        graphics.draw(line)
+    }
+
+    /** Is this a usable point?  */
+    private fun isUsable(pair: Pair<Double, Double>?): Boolean {
+
+        return when {
+            pair == null                              -> false
+            pair.first.isNaN() || pair.second.isNaN() -> false
+            else                                      -> true
+        }
     }
 }
