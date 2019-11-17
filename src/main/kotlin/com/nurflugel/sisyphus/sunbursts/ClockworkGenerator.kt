@@ -6,6 +6,7 @@ import com.nurflugel.sisyphus.gui.GuiController
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -15,12 +16,12 @@ class ClockworkGenerator {
 
     companion object {
 
-        const val numberOfCounts = 1000
+        const val numberOfCounts = 4000
         const val numberOfRhos = 1
-        const val r0 = 0.45
-        const val r1 = 0.55
+        const val r0 = 0.85
+        const val r1 = 0.15
         const val w0 = 2 * PI / numberOfCounts
-        const val w1 = w0 * 200
+        const val w1 = w0 * - 20
 
 
         @JvmStatic
@@ -42,11 +43,11 @@ class ClockworkGenerator {
     fun doIt() {
 
         println("""
-|   numberOfCounts = ${numberOfCounts}
-|   numberOfRhos = ${numberOfRhos}
-|   r0 = ${r0}
-|   r1 = ${r1}
-|   w0 = ${w0}
+|   numberOfCounts = $numberOfCounts
+|   numberOfRhos = $numberOfRhos
+|   r0 = $r0
+|   r1 = $r1
+|   w0 = $w0
 |   w1 = $w1""".trimMargin()
                )
 
@@ -95,8 +96,15 @@ class ClockworkGenerator {
         val e = r * sin(PI / 2 - theta)
         val d = sqrt(r * r - e * e)
         val rPrime = e + sqrt(startPoint.rho * startPoint.rho + d * d)
+        val d1 = rPrime - e
 
-        val alpha = acos(startPoint.rho / (rPrime - e))
+        val alpha = when { // deal with division by 0
+            abs(d1) > .000000001 -> {
+                acos((startPoint.rho / d1).cleanAcosValue())
+            }
+            else                 -> 0.0
+        }
+
         val thetaPrime = startPoint.thetaInRads() + alpha
         val newPoint = pointFromRad(rho = rPrime, thetaInRads = thetaPrime)
 
@@ -110,7 +118,14 @@ class ClockworkGenerator {
             this < 0.0 -> 0.0
             else       -> this
         }
-        return "%.${digits}f".format(number
-                                    )
+        return "%.${digits}f".format(number)
+    }
+}
+
+/** Asin, Acos, etc - they don't like values > 1 - so, if due to arithmatic errors, clean it to 1.  Same with 0? */
+private fun Double.cleanAcosValue(): Double {
+    return when {
+        this > 1.0 -> 1.0
+        else       -> this
     }
 }
