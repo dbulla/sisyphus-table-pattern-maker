@@ -19,9 +19,9 @@ class ClockworkWigglerGenerator {
         const val r0 = 0.985
         const val r1 = 1.0 - r0
         const val w0 = 2 * PI / 1000
-        const val w1 = w0 * 100
+        const val w1 = w0 * 30
         const val deltaRhoPerTurn = .01
-        const val fileName = "clockworkSwirl.thr"
+        const val fileName = "clockworkSwirl2.thr"
 
 
         @JvmStatic
