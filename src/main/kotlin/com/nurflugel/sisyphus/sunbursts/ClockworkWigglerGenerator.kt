@@ -16,12 +16,13 @@ class ClockworkWigglerGenerator {
         const val numberOfCounts = 100000
         const val numberOfCountsPerTurn = 1000
         const val numberOfRhos = 1
-        const val r0 = 0.985
+        const val r0 = 0.93
         const val r1 = 1.0 - r0
         const val w0 = 2 * PI / 1000
-        const val w1 = w0 * 30
+        const val w1 = w0 * 33
         const val deltaRhoPerTurn = .01
-        const val fileName = "clockworkSwirl2.thr"
+        const val thetaAdvance = 1.3
+        const val fileName = "clockworkSwirl5.thr"
 
 
         @JvmStatic
@@ -59,7 +60,7 @@ class ClockworkWigglerGenerator {
         //                val rho = r0 * rhoNumber / numberOfRhos.toDouble() // get the working rho for the iteration
         println("   rho = $rho")
         for (t in 0..numberOfCounts) {
-            val thetaInRads = w0 * t * 1.1  // the second hand angle
+            val thetaInRads = w0 * t * thetaAdvance  // the second hand angle
             val thetaOneInRads = w1 * t                                      // controls the height of the wiggle
             println(
                 "t = $t   Initial point: rho = $rho, thetaInRads = $thetaInRads, thetaInDegrees = ${thetaInRads * 180.0 / PI}"
