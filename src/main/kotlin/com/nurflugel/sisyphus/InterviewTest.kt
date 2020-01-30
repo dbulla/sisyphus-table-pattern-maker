@@ -58,11 +58,6 @@ class InterviewTest {
         } else {
             newArray.addAll(rightArray)
         }
-
-        //        val output = " New array is: " + newArray.joinToString(", ")
-
-        //        println(output)
-
     }
 
     /**
@@ -98,11 +93,6 @@ class InterviewTest {
         } else {
             rightArray.copyInto(newArray, newArrayPointer, rightPointer, rightArray.size)
         }
-
-        //        val output = " New array is: " + newArray.joinToString(", ")
-        //
-        //        println(output)
-
     }
 
 
