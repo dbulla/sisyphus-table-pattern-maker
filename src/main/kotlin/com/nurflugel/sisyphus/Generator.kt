@@ -5,7 +5,7 @@ import com.nurflugel.sisyphus.domain.Point.Companion.isRhoPracticallyOne
 import com.nurflugel.sisyphus.domain.Point.Companion.isRhoPracticallyZero
 import com.nurflugel.sisyphus.domain.Shape
 import com.nurflugel.sisyphus.gui.GuiController
-import com.nurflugel.sisyphus.shapes.Triangle
+import com.nurflugel.sisyphus.shapes.Rectangle
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.time.LocalDateTime
@@ -20,12 +20,13 @@ class Generator {
             Generator().doIt()
         }
     }
-    
+
     fun doIt() {
         // take the basic shape - make X copies for 1 revolution.  With each full resolution, reduce the rho by a %
         //            val template = SharpSawtooth()
         //            val template = TriangleSawtooth()
-        val template = Triangle()
+        //        val template = Triangle()
+        val template = Rectangle()
         //        val template = Square()
 
         val numberOfCopiesPerRev = template.numberOfCopiesPerRev // how many copies around the circle?
@@ -46,26 +47,26 @@ class Generator {
 
 
         val adjustedPoints = (0..numberOfCopies)
-            .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) } // generate the offset shape
-            .flatMap { it.segments } // flatten the shapes into their segments
-            .flatMap { it.generateSubSegments() } // transform the list of shapes into the list of segments
-            .flatMap { it.points(false) } // convert the segments into points
-            .map { adjustRho(it) } // round rho up or down if it's really close to 0 or 1
+                .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) } // generate the offset shape
+                .flatMap { it.segments } // flatten the shapes into their segments
+                .flatMap { it.generateSubSegments() } // transform the list of shapes into the list of segments
+                .flatMap { it.points(false) } // convert the segments into points
+                .map { adjustRho(it) } // round rho up or down if it's really close to 0 or 1
 
         val points = trimPoints(adjustedPoints)
         val dedupedPoints = eliminateSuccessiveDupes(points)
 
         val finalPoints: List<Point> = ensureLinesEndWithZeroOrOne(dedupedPoints)
         val lines = finalPoints
-            .map { "${it.thetaInRads()} \t${it.rho}" }
-            .toMutableList()
+                .map { "${it.thetaInRads()} \t${it.rho}" }
+                .toMutableList()
 
         template.addDescriptionLines(lines)
 
         getlinesWithCodeFileAsComments(lines, template)
 
         FileUtils.writeLines(File(template.fileName + LocalDateTime.now()), lines)
-        
+
         val plotterGui = GuiController(lines, template.fileName)
         plotterGui.showGui()
     }
@@ -81,7 +82,7 @@ class Generator {
         val fileName = "src/main/kotlin/$className.kt"
         val classFile = File(fileName)
         val fileLines = FileUtils.readLines(classFile)
-            .map { "# $it" }
+                .map { "# $it" }
         lines.add("# source file name: $fileName")
         lines.addAll(fileLines)
         return lines
@@ -127,8 +128,8 @@ class Generator {
         return when {
             points.size < 100 -> points
             else              -> (0..points.size - numberOfZeroPoints)
-                .takeWhile { allNonZero(points, it, numberOfZeroPoints) }
-                .map { points[it] }
+                    .takeWhile { allNonZero(points, it, numberOfZeroPoints) }
+                    .map { points[it] }
         }
     }
 
@@ -136,7 +137,7 @@ class Generator {
     private fun allNonZero(points: List<Point>, index: Int, numberOfZeroPoints: Int): Boolean {
 
         val allZero = (index..numberOfZeroPoints + index)
-            .all { points[it].isRhoPracticallyZero() }
+                .all { points[it].isRhoPracticallyZero() }
         return ! allZero
     }
 
