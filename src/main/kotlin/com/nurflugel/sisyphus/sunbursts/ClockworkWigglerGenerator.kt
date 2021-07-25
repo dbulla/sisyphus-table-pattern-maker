@@ -20,11 +20,11 @@ class ClockworkWigglerGenerator {
         const val r0 = 1.2
         const val r1 = 0.2 //1.0 - r0
         const val w0 = 2 * PI / numberOfTicksPerTurn // second hand speed -  1000 ticks per rev
-        const val w1 = w0 * 20 // waviness of the tip of the secondhand - 33 revs per rev
+        const val waviness = 330
+        const val w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
         const val deltaRhoPerTurn = .01
         const val thetaAdvance = 1.3
-        const val fileName = "clockworkSwirl5WithClippping.thr"
-
+        const val fileName = "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr"
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -44,13 +44,15 @@ class ClockworkWigglerGenerator {
      */
     fun doIt() {
 
-        println("""
+        println(
+            """
 |   numberOfCounts = $numberOfTicks
-|   numberOfRhos = $numberOfRhos
-|   r0 = $r0
-|   r1 = $r1
-|   w0 = $w0
-|   w1 = $w1""".trimMargin()
+|   numberOfRhos =   $numberOfRhos
+|   waviness =       $waviness
+|   r0 =             $r0
+|   r1 =             $r1
+|   w0 =             $w0
+|   w1 =             $w1""".trimMargin()
                )
 
         val points = mutableListOf<Point>()
@@ -63,10 +65,10 @@ class ClockworkWigglerGenerator {
         for (t in 0..numberOfTicks) {
             val thetaInRads = w0 * t * thetaAdvance  // the second hand angle
             val thetaOneInRads = w1 * t                                      // controls the height of the wiggle
-            println("t = $t   Initial point: rho = $rho, thetaInDegrees = ${thetaInRads.radsToDegrees()}")
+            //            println("t = $t   Initial point: rho = $rho, thetaInDegrees = ${thetaInRads.radsToDegrees()}")
             val deltaRho = r1 * cos(thetaOneInRads)
 
-            println("t = $t   Adjusted point: rho = ${rho + deltaRho}, thetaInDegrees = ${thetaInRads.radsToDegrees()}")
+            //            println("t = $t   Adjusted point: rho = ${rho + deltaRho}, thetaInDegrees = ${thetaInRads.radsToDegrees()}")
 
             if (isValid(thetaOneInRads))
                 points.add(pointFromRad(rho = rho + deltaRho, thetaInRads = thetaInRads))
@@ -82,8 +84,8 @@ class ClockworkWigglerGenerator {
 
         points
             .reversed()
+            .filter { ! it.thetaInRads().isNaN() }
             .forEach {
-
                 if (! it.thetaInRads().isNaN()) {
                     output.add("${it.thetaInRads()}  ${it.rho.formatNicely(4)}")
                 }
@@ -99,7 +101,6 @@ class ClockworkWigglerGenerator {
         output.add("//")
         programLines.forEach { output.add("// $it") }
 
-
         FileUtils.writeLines(File(fileName), output)
 
         val plotterGui = GuiController(output, fileName)
@@ -114,14 +115,18 @@ class ClockworkWigglerGenerator {
         // what the above does is strip away any theta greater than 2 PI.
 
         val thetaInDegrees = trimmedTheta.radsToDegrees()
-        println("Initial theta: ${thetaOneInRads.radsToDegrees()} trimmedThetaInDegrees = $thetaInDegrees")
+        //        println("Initial theta: ${thetaOneInRads.radsToDegrees()} trimmedThetaInDegrees = $thetaInDegrees")
         val angleSpread = 90
         val startAngle = (180 - angleSpread / 2.0)
-        val isValid = thetaInDegrees > startAngle && thetaInDegrees <= 180
-        return isValid
+        return thetaInDegrees > startAngle && thetaInDegrees <= 180
     }
 
 
+    /**
+     * Take the number and, if it's > 1, replace it with 1, if
+     * it's < 0, replace it with 0.  Else, trim to the number of digits
+     * @param digits Number of digits after the decimal
+     */
     private fun Double.formatNicely(digits: Int): String {
         val number = when {
             this > 1.0 -> 1.0
