@@ -87,7 +87,6 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             .map { it !! }
             .toList()
 
-
         val expandedPolarPairs = handleDeltaTheta(polarPairs)
 
         val pairs = expandedPolarPairs
@@ -100,7 +99,6 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
 
         val bImg = BufferedImage(guiPanel.width, guiPanel.height, BufferedImage.TYPE_INT_RGB)
         val cg = bImg.createGraphics()
-        //        val cg = graphics2D
         guiPanel.paintAll(cg)
 
 
@@ -191,6 +189,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             else                            -> currentPoint
         }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
+        graphics.color = Color.BLACK
         graphics.draw(line)
     }
 

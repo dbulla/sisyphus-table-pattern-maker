@@ -28,52 +28,14 @@ class ClockworkWigglerGenerator {
         @JvmStatic
         fun main(args: Array<String>) {
             val values = listOf(
-                0,
+                0.0,
                 .001,
-                .01,
-                .02,
-                .03,
-                .04,
-                .05,
-                .06,
-                .07,
-                .08,
-                .09,
+                .01, .02, .03, .04, .05, .06, .07, .08, .09,
                 .1, .2, .3, .4, .5, .6, .7, .8, .9,
-                //                1,
-                //                2,
-                //                3,
-                //                4,
-                //                5,
-                //                6,
-                //                7,
-                //                8,
-                //                9,
-                //                10,
-                //                11,
-                //                12,
-                //                13,
-                //                14,
-                //                15,
-                //                16,
-                //                17,
-                //                18,
-                //                19,
-                //                20,
-                //                30,
-                //                40,
-                //                60,
-                //                80,
-                //                100,
-                //                120,
-                //                180,
-                //                200,
-                //                240,
-                //                300,
-                //                330,
-                //                400,
-                //                1000,
-                //                9999
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                30, 40, 60, 80, 100,
+                120, 180, 200, 240, 300, 330, 400, 1000,
+                9999
                                )
             values.forEach {
                 waviness = it.toDouble()
@@ -149,7 +111,7 @@ class ClockworkWigglerGenerator {
         output.add("//")
         programLines.forEach { output.add("// $it") }
 
-        FileUtils.writeLines(File(fileName), output)
+        FileUtils.writeLines(File("tracks/$fileName"), output)
 
         val plotterGui = GuiController(output, fileName)
         plotterGui.showPreview(fileName) // show the preview
