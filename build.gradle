@@ -27,20 +27,21 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 application {
-  mainClassName = 'com.nurflugel.sisyphus.gui.GuiController'
-  mainClassName = 'com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator'
+//  mainClassName = 'com.nurflugel.sisyphus.gui.GuiController'
+//  mainClassName = 'com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator'
+  getMainClass().set('com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator')
 }
 
 dependencies {
-  implementation 'commons-io:commons-io:2.7'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-RC'
+  implementation 'commons-io:commons-io:2.11.0'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
 }
 
 repositories {
   mavenCentral()
-  jcenter()
+//  jcenter()
 }
 
 test {
