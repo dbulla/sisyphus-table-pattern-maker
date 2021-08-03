@@ -1,6 +1,8 @@
 package com.nurflugel.sisyphus.gui
 
+import com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator
 import org.apache.commons.io.FileUtils
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.event.KeyAdapter
@@ -13,6 +15,11 @@ import javax.swing.JPanel
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import java.io.IOException
+
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
 
 class GuiController(private val lines: MutableList<String>, fileName: String) {
 
@@ -28,7 +35,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath))
             val plotterGui = GuiController(lines, filePath)
-            plotterGui.showGui()
+            plotterGui.showPreview(ClockworkWigglerGenerator.fileName)
         }
 
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
@@ -43,22 +50,28 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         frame.isVisible = true
         frame.addKeyListener(object : KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
-                System.exit(0)
+                //                System.exit(0)
+                frame.isVisible = false
             }
         })
+        //        frame.de
     }
+
+    //    public fun close(){
+    //        frame.
+    //    }
 
     private fun getGraphicsContext() = guiPanel
 
-    fun showGui() {
+    fun showPreview(fileName: String) {
         // initial point of null
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
         // current point becomes previous point
 
-        val graphics2D = getGraphicsContext().graphics as Graphics2D
-
-        val scaleFactor = getGraphicsContext().size.height / 2 // 2 * rho=1 gives two 
+        val graphicsContext = getGraphicsContext()
+        val graphics2D = graphicsContext.graphics as Graphics2D
+        val scaleFactor = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
         val offset = scaleFactor
 
         var previousPoint: Pair<Double, Double>? = null
@@ -84,9 +97,29 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             .filter { isUsable(it) }
             .toList()
 
+
+        val bImg = BufferedImage(guiPanel.width, guiPanel.height, BufferedImage.TYPE_INT_RGB)
+        val cg = bImg.createGraphics()
+        //        val cg = graphics2D
+        guiPanel.paintAll(cg)
+
+
         for (currentPoint in pairs) {
             plot(previousPoint, currentPoint, graphics2D)
+            printPlot(previousPoint, currentPoint, cg)
             previousPoint = currentPoint
+        }
+
+
+        try {
+            val imageFileName = File("./images/${fileName.replace(".thr", ".png")}")
+            println("imageFileName = $imageFileName")
+            if (ImageIO.write(bImg, "png", imageFileName)) {
+                println("-- saved")
+            }
+        } catch (e: IOException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
         }
     }
 
@@ -148,15 +181,30 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
     }
 
     /** Draw a line in the context between the two points */
-    private fun plot(possiblePreviousPoint: Pair<Double, Double>?,
-                     currentPoint: Pair<Double, Double>,
-                     graphics: Graphics2D
+    private fun plot(
+        possiblePreviousPoint: Pair<Double, Double>?,
+        currentPoint: Pair<Double, Double>,
+        graphics: Graphics2D
                     ) {
         val previousPoint = when {
             isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
             else                            -> currentPoint
         }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
+        graphics.draw(line)
+    }
+
+    private fun printPlot(
+        possiblePreviousPoint: Pair<Double, Double>?,
+        currentPoint: Pair<Double, Double>,
+        graphics: Graphics2D
+                         ) {
+        val previousPoint = when {
+            isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
+            else                            -> currentPoint
+        }
+        val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
+        graphics.color = Color.BLACK
         graphics.draw(line)
     }
 

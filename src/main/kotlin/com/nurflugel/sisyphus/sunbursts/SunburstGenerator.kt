@@ -117,7 +117,7 @@ class SunburstGenerator {
         FileUtils.writeLines(File("inwards_sunburst.thr"), output)
 
         val plotterGui = GuiController(output, "inwards_sunburst.thr")
-        plotterGui.showGui()
+        plotterGui.showPreview(ClockworkWigglerGenerator.fileName)
         println("Done!")
 
 

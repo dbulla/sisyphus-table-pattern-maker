@@ -6,29 +6,87 @@ import com.nurflugel.sisyphus.gui.GuiController
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
+import java.nio.charset.Charset
 import kotlin.math.acos
 import kotlin.math.cos
-
 
 class ClockworkWigglerGenerator {
 
     companion object {
-
         const val numberOfTicks = 100000
         const val numberOfTicksPerTurn = 1000
         const val numberOfRhos = 1
         const val r0 = 1.2
         const val r1 = 0.2 //1.0 - r0
         const val w0 = 2 * PI / numberOfTicksPerTurn // second hand speed -  1000 ticks per rev
-        const val waviness = 330
-        const val w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
+        var waviness: Double = 20.0
+        var w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
         const val deltaRhoPerTurn = .01
         const val thetaAdvance = 1.3
-        const val fileName = "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr"
+        var fileName = "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr"
 
         @JvmStatic
         fun main(args: Array<String>) {
-            ClockworkWigglerGenerator().doIt()
+            val values = listOf(
+                0,
+                .001,
+                .01,
+                .02,
+                .03,
+                .04,
+                .05,
+                .06,
+                .07,
+                .08,
+                .09,
+                .1, .2, .3, .4, .5, .6, .7, .8, .9,
+                //                1,
+                //                2,
+                //                3,
+                //                4,
+                //                5,
+                //                6,
+                //                7,
+                //                8,
+                //                9,
+                //                10,
+                //                11,
+                //                12,
+                //                13,
+                //                14,
+                //                15,
+                //                16,
+                //                17,
+                //                18,
+                //                19,
+                //                20,
+                //                30,
+                //                40,
+                //                60,
+                //                80,
+                //                100,
+                //                120,
+                //                180,
+                //                200,
+                //                240,
+                //                300,
+                //                330,
+                //                400,
+                //                1000,
+                //                9999
+                               )
+            values.forEach {
+                waviness = it.toDouble()
+                fileName = "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr"
+
+                w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
+
+                ClockworkWigglerGenerator().doIt()
+            }
+            //            for (i in values) {
+            //                waviness = i as Double
+            //                ClockworkWigglerGenerator().doIt()
+            //            }
         }
     }
 
@@ -60,15 +118,11 @@ class ClockworkWigglerGenerator {
         val deltaRhoPerCount = deltaRhoPerTurn / numberOfTicksPerTurn
         var rho = r0
 
-        //                val rho = r0 * rhoNumber / numberOfRhos.toDouble() // get the working rho for the iteration
         println("   rho = $rho")
         for (t in 0..numberOfTicks) {
             val thetaInRads = w0 * t * thetaAdvance  // the second hand angle
-            val thetaOneInRads = w1 * t                                      // controls the height of the wiggle
-            //            println("t = $t   Initial point: rho = $rho, thetaInDegrees = ${thetaInRads.radsToDegrees()}")
+            val thetaOneInRads = w1 * t              // controls the height of the wiggle
             val deltaRho = r1 * cos(thetaOneInRads)
-
-            //            println("t = $t   Adjusted point: rho = ${rho + deltaRho}, thetaInDegrees = ${thetaInRads.radsToDegrees()}")
 
             if (isValid(thetaOneInRads))
                 points.add(pointFromRad(rho = rho + deltaRho, thetaInRads = thetaInRads))
@@ -76,7 +130,6 @@ class ClockworkWigglerGenerator {
             rho -= deltaRhoPerCount
             if (rho < 0.0) break
         }
-
 
         val output = mutableListOf<String>()
         //        output.add("// numberOfLines= $numberOfLines")
@@ -86,16 +139,11 @@ class ClockworkWigglerGenerator {
             .reversed()
             .filter { ! it.thetaInRads().isNaN() }
             .forEach {
-                if (! it.thetaInRads().isNaN()) {
-                    output.add("${it.thetaInRads()}  ${it.rho.formatNicely(4)}")
-                }
+                output.add("${it.thetaInRads()}  ${it.rho.formatNicely(4)}")
             }
 
-        //        output.add("${points.last().thetaInRads()}  1.0 ")
-        //        output.add("${points.last().thetaInRads()}  0.0 ")
-
-        // add this file so we can remember how to get it back!
-        val programLines = FileUtils.readLines(File("src/main/kotlin/com/nurflugel/sisyphus/sunbursts/ClockworkWigglerGenerator.kt"))
+        // add the contents of this file, so we can remember how to get it back!
+        val programLines = FileUtils.readLines(File("src/main/kotlin/com/nurflugel/sisyphus/sunbursts/ClockworkWigglerGenerator.kt"), Charset.defaultCharset())
         output.add("//")
         output.add("// add this file so we can remember how to get it back!")
         output.add("//")
@@ -104,7 +152,7 @@ class ClockworkWigglerGenerator {
         FileUtils.writeLines(File(fileName), output)
 
         val plotterGui = GuiController(output, fileName)
-        plotterGui.showGui()
+        plotterGui.showPreview(fileName) // show the preview
         println("Done!")
     }
 
