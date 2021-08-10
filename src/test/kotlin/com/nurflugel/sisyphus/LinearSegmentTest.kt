@@ -3,9 +3,9 @@ package com.nurflugel.sisyphus
 import com.nurflugel.sisyphus.domain.LinearSegment
 import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Point.Companion.RHO_PRACTICALLY_ZERO
-import io.kotlintest.matchers.doubles.shouldBeLessThan
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.StringSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.comparables.shouldBeLessThan
+import io.kotest.matchers.shouldBe
 
 const val expected1 = 0.8660254037844387
 

@@ -8,7 +8,8 @@
 
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.31"
+    //    id("org.jetbrains.kotlin.jvm") version "1.4.31"
+    id("org.jetbrains.kotlin.jvm") version "1.5.30-M1"
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
@@ -31,19 +32,24 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // This dependency is used by the application.
-    implementation("com.google.guava:guava:30.1-jre")
+    implementation("com.google.guava:guava:30.1.1-jre")
     implementation("commons-io:commons-io:2.11.0")
 
-    // Use the Kotlin test library.
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-    // Use the Kotlin JUnit integration.
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    //    // Use the Kotlin test library.
+    //    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    //
+    //    // Use the Kotlin JUnit integration.
+    //    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("io.kotest:kotest-runner-junit5:4.6.1")
 }
 
 application {
     // Define the main class for the application.
-    mainClass.set("com.nurflugel.")
+    mainClass.set("com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator")
     group = "com.nurflugel"
     version = "0.0.1-SNAPSHOT"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
