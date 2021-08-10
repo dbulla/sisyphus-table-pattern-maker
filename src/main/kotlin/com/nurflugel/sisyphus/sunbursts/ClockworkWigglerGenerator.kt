@@ -3,6 +3,8 @@ package com.nurflugel.sisyphus.sunbursts
 import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Point.Companion.pointFromRad
 import com.nurflugel.sisyphus.gui.GuiController
+import com.nurflugel.sisyphus.gui.GuiController.Companion.imagesDir
+import com.nurflugel.sisyphus.gui.GuiController.Companion.tracksDir
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
@@ -27,17 +29,24 @@ class ClockworkWigglerGenerator {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            val values = listOf(
-                0.0,
-                .001,
-                .01, .02, .03, .04, .05, .06, .07, .08, .09,
-                .1, .2, .3, .4, .5, .6, .7, .8, .9,
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                30, 40, 60, 80, 100,
-                120, 180, 200, 240, 300, 330, 400, 1000,
-                9999
-                               )
-            values.forEach {
+            //            val values = listOf(
+            //                0.0,
+            //                .001,
+            //                .01, .02, .03, .04, .05, .06, .07, .08, .09,
+            //                .1, .2, .3, .4, .5, .6, .7, .8, .9,
+            //                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            //                30, 40, 60, 80, 100,
+            //                120, 180, 200, 240, 300, 330, 400, 1000,
+            //                9999
+            //                               )
+            //            for (i in values) {
+            //                waviness = i as Double
+            //                ClockworkWigglerGenerator().doIt()
+            //            }
+            for (i in 1..2000) {
+                val it: Double = i / 10.0
+                //            }
+                //            values.forEach {
                 waviness = it.toDouble()
                 fileName = "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr"
 
@@ -45,12 +54,10 @@ class ClockworkWigglerGenerator {
 
                 ClockworkWigglerGenerator().doIt()
             }
-            //            for (i in values) {
-            //                waviness = i as Double
-            //                ClockworkWigglerGenerator().doIt()
-            //            }
+
         }
     }
+
 
     /**
      * Think of a secondhand on a clock as the end traces out a circle as it turns.
@@ -110,8 +117,9 @@ class ClockworkWigglerGenerator {
         output.add("// add this file so we can remember how to get it back!")
         output.add("//")
         programLines.forEach { output.add("// $it") }
-
-        FileUtils.writeLines(File("tracks/$fileName"), output)
+        FileUtils.forceMkdir(File(tracksDir))
+        FileUtils.forceMkdir(File(imagesDir))
+        FileUtils.writeLines(File("$tracksDir/$fileName"), output)
 
         val plotterGui = GuiController(output, fileName)
         plotterGui.showPreview(fileName) // show the preview

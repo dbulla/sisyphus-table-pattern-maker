@@ -26,6 +26,9 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
     private var guiPanel = JPanel()
 
     companion object {
+        const val imagesDir = "images2"
+        const val tracksDir = "tracks2"
+
         @JvmStatic
         fun main(args: Array<String>) {
             val filePath = if (args.isNotEmpty() && args.first().startsWith("thrFile=")) args.last().substringAfter("thrFile=")
@@ -101,16 +104,13 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         val cg = bImg.createGraphics()
         guiPanel.paintAll(cg)
 
-
         for (currentPoint in pairs) {
             plot(previousPoint, currentPoint, graphics2D)
             printPlot(previousPoint, currentPoint, cg)
             previousPoint = currentPoint
         }
-
-
         try {
-            val imageFileName = File("./images/${fileName.replace(".thr", ".png")}")
+            val imageFileName = File("./$imagesDir/${fileName.replace(".thr", ".png")}")
             println("imageFileName = $imageFileName")
             if (ImageIO.write(bImg, "png", imageFileName)) {
                 println("-- saved")
@@ -119,6 +119,8 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             // TODO Auto-generated catch block
             e.printStackTrace()
         }
+        //        guiPanel.isVisible=false
+        guiPanel.parent.isVisible = false
     }
 
     /**
