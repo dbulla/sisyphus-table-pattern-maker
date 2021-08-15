@@ -1,6 +1,7 @@
 package com.nurflugel.sisyphus.gui
 
 import com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator
+import com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator.Companion.fileName
 import org.apache.commons.io.FileUtils
 import java.awt.Color
 import java.awt.Dimension
@@ -23,6 +24,7 @@ import java.awt.image.BufferedImage
 
 class GuiController(private val lines: MutableList<String>, fileName: String) {
 
+    private val frame = JFrame()
     private var guiPanel = JPanel()
 
     companion object {
@@ -44,8 +46,8 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
     }
 
-    init {
-        val frame = JFrame("$fileName                    Click any key to close")
+    private fun initialize(filename: String) {
+        frame.title = "$fileName                    Click any key to close"
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
         frame.preferredSize = Dimension(1200, 1200)
@@ -67,6 +69,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
     private fun getGraphicsContext() = guiPanel
 
     fun showPreview(fileName: String) {
+        initialize(fileName)
         // initial point of null
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
@@ -121,6 +124,8 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         }
         //        guiPanel.isVisible=false
         guiPanel.parent.isVisible = false
+        frame.isVisible = false
+        frame.dispose()
     }
 
     /**
