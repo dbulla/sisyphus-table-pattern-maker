@@ -35,11 +35,6 @@ dependencies {
     implementation("com.google.guava:guava:30.1.1-jre")
     implementation("commons-io:commons-io:2.11.0")
 
-    //    // Use the Kotlin test library.
-    //    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    //
-    //    // Use the Kotlin JUnit integration.
-    //    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation("io.kotest:kotest-runner-junit5:4.6.1")
 }
 
