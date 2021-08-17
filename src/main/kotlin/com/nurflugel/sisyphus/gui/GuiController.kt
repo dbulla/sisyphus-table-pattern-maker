@@ -6,20 +6,21 @@ import org.apache.commons.io.FileUtils
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
+import java.awt.RenderingHints
+import java.awt.RenderingHints.KEY_TEXT_ANTIALIASING
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.geom.Line2D
+import java.awt.image.BufferedImage
 import java.io.File
+import java.io.IOException
+import javax.imageio.ImageIO
 import javax.swing.JFrame
 import javax.swing.JFrame.EXIT_ON_CLOSE
 import javax.swing.JPanel
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-import java.io.IOException
-
-import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
 
 
 class GuiController(private val lines: MutableList<String>, fileName: String) {
@@ -28,8 +29,8 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
     private var guiPanel = JPanel()
 
     companion object {
-        const val imagesDir = "images2"
-        const val tracksDir = "tracks2"
+        const val imagesDir = "images3"
+        const val tracksDir = "tracks3"
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -79,6 +80,12 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         val graphics2D = graphicsContext.graphics as Graphics2D
         val scaleFactor = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
         val offset = scaleFactor
+
+        val renderingHints = RenderingHints(
+            RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON
+                                           )
+        graphics2D.setRenderingHints(renderingHints)
 
         var previousPoint: Pair<Double, Double>? = null
 
@@ -197,6 +204,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
         graphics.color = Color.BLACK
+
         graphics.draw(line)
     }
 

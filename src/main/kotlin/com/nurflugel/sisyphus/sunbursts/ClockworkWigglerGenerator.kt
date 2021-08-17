@@ -43,7 +43,7 @@ class ClockworkWigglerGenerator {
             //                waviness = i as Double
             //                ClockworkWigglerGenerator().doIt()
             //            }
-            for (i in 2001..4000) {
+            for (i in 0..20) {
                 val it: Double = i / 80.0
                 //            }
                 //            values.forEach {
