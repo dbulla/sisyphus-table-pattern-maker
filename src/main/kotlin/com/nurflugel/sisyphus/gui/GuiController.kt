@@ -1,9 +1,9 @@
 package com.nurflugel.sisyphus.gui
 
-import com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator
 import com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator.Companion.fileName
 import org.apache.commons.io.FileUtils
 import java.awt.Color
+import java.awt.Color.BLACK
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.event.KeyAdapter
@@ -40,7 +40,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath))
             val plotterGui = GuiController(lines, filePath)
-            plotterGui.showPreview(ClockworkWigglerGenerator.fileName)
+            plotterGui.showPreview(fileName)
         }
 
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
@@ -77,6 +77,21 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
 
         val graphicsContext = getGraphicsContext()
         val graphics2D = graphicsContext.graphics as Graphics2D
+        val BORDER_WIDTH = 100
+        val width = frame.width
+        val height = frame.height
+
+        graphics2D.color = Color.lightGray
+        graphics2D.fillRect(0, 0, width, height)
+        graphics2D.color = Color.WHITE
+        graphics2D.fillOval(
+            BORDER_WIDTH,
+            BORDER_WIDTH,
+            width - 2 * BORDER_WIDTH,
+            height - 2 * BORDER_WIDTH
+                           )
+        graphics2D.color = BLACK
+
         val scaleFactor = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
         val offset = scaleFactor
 
@@ -103,19 +118,18 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             .toList()
 
 
-        val bImg = BufferedImage(guiPanel.width, guiPanel.height, BufferedImage.TYPE_INT_RGB)
-        val cg = bImg.createGraphics()
-        guiPanel.paintAll(cg)
+        val bufferedImage = BufferedImage(guiPanel.width, guiPanel.height, BufferedImage.TYPE_INT_RGB)
+        val pngGraphics = bufferedImage.createGraphics()
+        guiPanel.paintAll(pngGraphics)
 
         for (currentPoint in pairs) {
-            plot(previousPoint, currentPoint, graphics2D)
-            printPlot(previousPoint, currentPoint, cg)
+            plot(previousPoint, currentPoint, graphics2D, pngGraphics)
             previousPoint = currentPoint
         }
         try {
             val imageFileName = File("./$imagesDir/${fileName.replace(".thr", ".png")}")
             println("imageFileName = $imageFileName")
-            if (ImageIO.write(bImg, "png", imageFileName)) {
+            if (ImageIO.write(bufferedImage, "png", imageFileName)) {
                 println("-- saved")
             }
         } catch (e: IOException) {
@@ -189,29 +203,18 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
     private fun plot(
         possiblePreviousPoint: Pair<Double, Double>?,
         currentPoint: Pair<Double, Double>,
-        graphics: Graphics2D
+        graphics: Graphics2D,
+        pngGraphics: Graphics2D
                     ) {
         val previousPoint = when {
             isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
             else                            -> currentPoint
         }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
-        graphics.color = Color.BLACK
+        graphics.color = BLACK
+        pngGraphics.color = BLACK
         graphics.draw(line)
-    }
-
-    private fun printPlot(
-        possiblePreviousPoint: Pair<Double, Double>?,
-        currentPoint: Pair<Double, Double>,
-        graphics: Graphics2D
-                         ) {
-        val previousPoint = when {
-            isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
-            else                            -> currentPoint
-        }
-        val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
-        graphics.color = Color.BLACK
-        graphics.draw(line)
+        pngGraphics.draw(line)
     }
 
     /** Is this a usable point?  */
