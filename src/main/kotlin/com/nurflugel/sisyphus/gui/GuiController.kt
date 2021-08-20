@@ -75,7 +75,7 @@ class GuiController {
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
         // current point becomes previous point
-        frame.title = fileName + "     Click any key to close"
+        frame.title = "$fileName     Click any key to close"
 
         val graphicsContext = getGraphicsContext()
         val graphics2D = graphicsContext.graphics as Graphics2D
