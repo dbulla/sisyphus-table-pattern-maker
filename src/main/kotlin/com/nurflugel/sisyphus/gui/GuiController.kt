@@ -1,13 +1,10 @@
 package com.nurflugel.sisyphus.gui
 
-import com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator
-import com.nurflugel.sisyphus.sunbursts.ClockworkWigglerGenerator.Companion.fileName
 import org.apache.commons.io.FileUtils
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.RenderingHints
-import java.awt.RenderingHints.KEY_TEXT_ANTIALIASING
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.geom.Line2D
@@ -25,7 +22,7 @@ import kotlin.math.sin
 
 private const val WIDTH = 1000
 
-class GuiController(private val lines: MutableList<String>, fileName: String) {
+class GuiController {
 
     private val frame = JFrame()
     private var guiPanel = JPanel()
@@ -42,15 +39,16 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/crsolomon/1551055361-sun-moon.thr"
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath))
-            val plotterGui = GuiController(lines, filePath)
-            plotterGui.showPreview(ClockworkWigglerGenerator.fileName)
+            //            val plotterGui = GuiController()
+            //                .
+            //            plotterGui.showPreview(ClockworkWigglerGenerator.fileName, output)
         }
 
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
     }
 
-    private fun initialize(filename: String) {
-        frame.title = "$fileName                    Click any key to close"
+    private fun initialize() {
+        frame.title = "Click any key to close"
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
         frame.preferredSize = Dimension(WIDTH, WIDTH)
@@ -71,8 +69,8 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
 
     private fun getGraphicsContext() = guiPanel
 
-    fun showPreview(fileName: String) {
-        initialize(fileName)
+    fun showPreview(fileName: String, lines: MutableList<String>) {
+        initialize()
         // initial point of null
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
@@ -80,6 +78,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
 
         val graphicsContext = getGraphicsContext()
         val graphics2D = graphicsContext.graphics as Graphics2D
+        graphics2D.clearRect(0, 0, WIDTH, WIDTH)
         val scaleFactor = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
         val offset = scaleFactor
 
@@ -131,10 +130,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
             // TODO Auto-generated catch block
             e.printStackTrace()
         }
-        //        guiPanel.isVisible=false
         guiPanel.parent.isVisible = false
-        frame.isVisible = false
-        frame.dispose()
     }
 
     /**

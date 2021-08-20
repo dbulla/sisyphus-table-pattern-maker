@@ -52,7 +52,8 @@ class SunburstGenerator {
             // determine core rho for the wave
             val maxRhoForWave = (1.0 / numberOfWaves) * wave
             // for each burst, vary theta and core rho 
-            val numberOfBursts = (Math.abs(rand.nextGaussian()
+            val numberOfBursts = (Math.abs(
+                rand.nextGaussian()
                                           ) * numberOfBurstsBase + numberOfBurstsMin).toInt() // at least 2, as many as 6 - determines core thetas
             println("numberOfBursts = $numberOfBursts")
             // determine core theta
@@ -63,7 +64,8 @@ class SunburstGenerator {
             (0 until numberOfBursts).forEach { burst ->
                 val coreTheta = deltaTheta * burst
                 println("printing burst $burst of wave $wave at core theta ${coreTheta * 180 / PI} degrees (not rads!)")
-                val numberOfRaysPerBurst = (Math.abs(rand.nextGaussian()
+                val numberOfRaysPerBurst = (Math.abs(
+                    rand.nextGaussian()
                                                     ) * numberOfRaysBase + numberOfRaysMin).toInt() // vary for each burst
                 // now with core theta and core rho, draw n rays, varying rho and theta by a varied amount
                 repeat((0..numberOfRaysPerBurst).count()) {
@@ -97,7 +99,7 @@ class SunburstGenerator {
             OUTWARDS -> output.add("0.0000    0.000") // start at 0,0
             INWARDS  -> output.add("0.0000    1.000") // start at 0,1
         }
-        
+
         (0 until allRays.size).forEach {
             val rayN = allRays[it]
             when (direction) {
@@ -116,8 +118,8 @@ class SunburstGenerator {
 
         FileUtils.writeLines(File("inwards_sunburst.thr"), output)
 
-        val plotterGui = GuiController(output, "inwards_sunburst.thr")
-        plotterGui.showPreview(ClockworkWigglerGenerator.fileName)
+        val plotterGui = GuiController()
+        plotterGui.showPreview("inwards_sunburst.thr", output)
         println("Done!")
 
 

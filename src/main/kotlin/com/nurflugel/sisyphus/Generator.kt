@@ -59,8 +59,8 @@ class Generator {
 
         val finalPoints: List<Point> = ensureLinesEndWithZeroOrOne(dedupedPoints)
         val lines = finalPoints
-                .map { "${it.thetaInRads()} \t${it.rho}" }
-                .toMutableList()
+            .map { "${it.thetaInRads()} \t${it.rho}" }
+            .toMutableList()
 
         template.addDescriptionLines(lines)
 
@@ -68,8 +68,8 @@ class Generator {
 
         FileUtils.writeLines(File(template.fileName + LocalDateTime.now()), lines)
 
-        val plotterGui = GuiController(lines, template.fileName)
-        plotterGui.showPreview(ClockworkWigglerGenerator.fileName)
+        val plotterGui = GuiController()
+        plotterGui.showPreview(template.fileName, lines)
     }
 
     /**

@@ -115,8 +115,8 @@ class ParallelLinesGenerator {
 
         FileUtils.writeLines(File("parallel_lines.thr"), output)
 
-        val plotterGui = GuiController(output, "parallel_lines.thr")
-        plotterGui.showPreview(ClockworkWigglerGenerator.fileName)
+        val plotterGui = GuiController()
+        plotterGui.showPreview("parallel_lines.thr", output)
         println("Done!")
     }
 
