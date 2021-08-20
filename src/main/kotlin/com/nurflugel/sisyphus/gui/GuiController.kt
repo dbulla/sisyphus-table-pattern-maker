@@ -79,7 +79,7 @@ class GuiController {
 
         val graphicsContext = getGraphicsContext()
         val graphics2D = graphicsContext.graphics as Graphics2D
-        graphics2D.clearRect(0, 0, WIDTH, WIDTH)
+        graphics2D.clearRect(0, 0, graphicsContext.width, graphicsContext.height)
         val scaleFactor = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
         val offset = scaleFactor
 
