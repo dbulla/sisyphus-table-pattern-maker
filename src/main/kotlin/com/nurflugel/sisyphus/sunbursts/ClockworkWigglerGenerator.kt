@@ -28,31 +28,16 @@ class ClockworkWigglerGenerator {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            //            val values = listOf(
-            //                0.0,
-            //                .001,
-            //                .01, .02, .03, .04, .05, .06, .07, .08, .09,
-            //                .1, .2, .3, .4, .5, .6, .7, .8, .9,
-            //                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-            //                30, 40, 60, 80, 100,
-            //                120, 180, 200, 240, 300, 330, 400, 1000,
-            //                9999
-            //                               )
-            //            for (i in values) {
-            //                waviness = i as Double
-            //                ClockworkWigglerGenerator().doIt()
-            //            }
-
             val generator = ClockworkWigglerGenerator()
             val plotterGui = GuiController()
             plotterGui.initialize()
-            //            for (i in 0..8000) {
-            for (i in 0..8) {
+            for (i in 0..8000) {
                 println("count = ${count ++}")
                 val waviness: Double = i / 320.0
                 w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
                 generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
             }
+            // uncomment below to auto-shutdown, rather than waiting for the user to press a key stroke
             //            plotterGui.shutDown()
 
         }
