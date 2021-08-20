@@ -23,6 +23,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
+private const val WIDTH = 1000
+
 class GuiController(private val lines: MutableList<String>, fileName: String) {
 
     private val frame = JFrame()
@@ -51,7 +53,7 @@ class GuiController(private val lines: MutableList<String>, fileName: String) {
         frame.title = "$fileName                    Click any key to close"
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
-        frame.preferredSize = Dimension(1200, 1200)
+        frame.preferredSize = Dimension(WIDTH, WIDTH)
         frame.pack()
         frame.isVisible = true
         frame.addKeyListener(object : KeyAdapter() {
