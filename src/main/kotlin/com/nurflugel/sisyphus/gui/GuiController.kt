@@ -47,7 +47,7 @@ class GuiController {
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
     }
 
-    private fun initialize() {
+    internal fun initialize() {
         frame.title = "Click any key to close"
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
@@ -56,25 +56,26 @@ class GuiController {
         frame.isVisible = true
         frame.addKeyListener(object : KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
-                //                System.exit(0)
-                frame.isVisible = false
+                shutDown()
             }
         })
-        //        frame.de
     }
 
-    //    public fun close(){
-    //        frame.
-    //    }
+    internal fun shutDown() {
+        guiPanel.parent.isVisible = false
+        frame.isVisible = false
+        frame.dispose()
+        //        System.exit(0) // this will kill the app completely
+    }
 
     private fun getGraphicsContext() = guiPanel
 
     fun showPreview(fileName: String, lines: MutableList<String>) {
-        initialize()
         // initial point of null
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
         // current point becomes previous point
+        frame.title = fileName + "     Click any key to close"
 
         val graphicsContext = getGraphicsContext()
         val graphics2D = graphicsContext.graphics as Graphics2D

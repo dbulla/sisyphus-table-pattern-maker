@@ -45,12 +45,15 @@ class ClockworkWigglerGenerator {
 
             val generator = ClockworkWigglerGenerator()
             val plotterGui = GuiController()
-            for (i in 0..8000) {
+            plotterGui.initialize()
+            //            for (i in 0..8000) {
+            for (i in 0..8) {
                 println("count = ${count ++}")
                 val waviness: Double = i / 320.0
                 w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
                 generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
             }
+            //            plotterGui.shutDown()
 
         }
     }
