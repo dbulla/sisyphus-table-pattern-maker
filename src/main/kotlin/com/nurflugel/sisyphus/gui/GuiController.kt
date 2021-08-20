@@ -39,9 +39,8 @@ class GuiController {
             else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/crsolomon/1551055361-sun-moon.thr"
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath))
-            //            val plotterGui = GuiController()
-            //                .
-            //            plotterGui.showPreview(ClockworkWigglerGenerator.fileName, output)
+            val plotterGui = GuiController()
+            plotterGui.showPreview(filePath, lines)
         }
 
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
@@ -217,7 +216,8 @@ class GuiController {
             else                            -> currentPoint
         }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
-        graphics.color = Color.BLACK
+        //        graphics.color = Color.BLACK
+        graphics.color = Color.GRAY
         graphics.draw(line)
     }
 
