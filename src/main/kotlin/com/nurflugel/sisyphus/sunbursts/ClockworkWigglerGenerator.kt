@@ -87,7 +87,6 @@ class ClockworkWigglerGenerator {
         }
 
         val output = mutableListOf<String>()
-        //        output.add("// numberOfLines= $numberOfLines")
         output.add("816.6588952562589 0.0")
 
         points
@@ -107,7 +106,7 @@ class ClockworkWigglerGenerator {
         FileUtils.forceMkdir(File(imagesDir))
         FileUtils.writeLines(File("$tracksDir/$fileName"), output)
 
-        plotterGui.showPreview(fileName, output) // show the preview
+        plotterGui.showPreview(fileName, output, false) // show the preview
         println("Done!")
     }
 

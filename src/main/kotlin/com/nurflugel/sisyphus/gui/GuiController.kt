@@ -40,7 +40,7 @@ class GuiController {
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath))
             val plotterGui = GuiController()
-            plotterGui.showPreview(filePath, lines)
+            plotterGui.showPreview(filePath, lines, false)
         }
 
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
@@ -53,11 +53,11 @@ class GuiController {
         frame.preferredSize = Dimension(WIDTH, WIDTH)
         frame.pack()
         frame.isVisible = true
-        frame.addKeyListener(object : KeyAdapter() {
-            override fun keyPressed(e: KeyEvent?) {
-                shutDown()
-            }
-        })
+        //        frame.addKeyListener(object : KeyAdapter() {
+        //            override fun keyPressed(e: KeyEvent?) {
+        //                shutDown()
+        //            }
+        //        })
     }
 
     internal fun shutDown() {
@@ -69,7 +69,7 @@ class GuiController {
 
     private fun getGraphicsContext() = guiPanel
 
-    fun showPreview(fileName: String, lines: MutableList<String>) {
+    fun showPreview(fileName: String, lines: MutableList<String>, saveImages: Boolean) {
         // initial point of null
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
@@ -117,7 +117,9 @@ class GuiController {
 
         for (currentPoint in pairs) {
             plot(previousPoint, currentPoint, graphics2D)
-            printPlot(previousPoint, currentPoint, cg)
+            if (saveImages) {
+                printPlot(previousPoint, currentPoint, cg)
+            }
             previousPoint = currentPoint
         }
         try {
@@ -217,6 +219,7 @@ class GuiController {
         }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
         //        graphics.color = Color.BLACK
+        //                graphics.color = Color.WHITE
         graphics.color = Color.GRAY
         graphics.draw(line)
     }
