@@ -5,29 +5,34 @@ This app creates and displays .thr files for sand tables like the Sisyphus.
 You can also run the display part separately, and display a previously generated or downloaded file.
 
 ## How do I run it?
- - First, make sure you have a version of Java in your path.  JDK 8-12 will work.  From a command line you should be able to type `java -version` and have that work
- - Second, you'll probably want to use an IDE (although you can also use a text editor) to create or modify source files.  I highly recommend JetBrains' IntelliJ IDEA.
- - The project uses Gradle to build and run.  Most IDEs know how to open Gradle projects (open the `build.gradle` file using the `open as project` option).  You may need a plugin for Eclipse. 
+
+- First, make sure you have a version of Java in your path. JDK 8-16 will work.
+- After checking out the repo, execute `./gradlew run` from the command line.
+- The project uses Gradle to build and run. Most IDEs know how to open Gradle projects (open the `build.gradle` file
+  using the `open as project` option). You may need a plugin for Eclipse.
 
 ## What language is it written in?
-The app is written in Kotlin (https://kotlinlang.org/), which is part of the JVM ecosystem. Gradle and Intellij know how to build/run Kotlin apps.  
 
-## What are the classes to run?
-There are 2 main classes - one lets you generate patterns, the other lets you pre-visualize them.
- - `Generator.kt` 
+The app is written in Kotlin (https://kotlinlang.org/), which is part of the JVM ecosystem. Gradle and Intellij know how
+to build/run Kotlin apps.
+
+// ignore anything below this line, gotta rewrite the docs again...
+
+- `Generator.kt`
    - This generates the .thr file, based on a `Shape` that you've created (see below)
    - Modify the existing basic shapes, or create new ones
    - Output is trimmed so that rho never exceeds 1, nor is less than 0
    - Successive duplicate points are eliminated, as they're redundant
-   - Shape settings are stored at the top of the file as comments, and the entire `Shape` file stored as a comment at the end
-     - This lets you easily remember how you built that cool shape after you lost the settings :)
-   - When the shape is generated (the file name is taken from the class fileName attribute), a very poor visualization window is brought up tracing the path of the ball.
-     - Hit any key to close the window and end the program.
+   - Shape settings are stored at the top of the file as comments, and the entire `Shape` file stored as a comment at
+     the end
+      - This lets you easily remember how you built that cool shape after you lost the settings :)
+   - When the shape is generated (the file name is taken from the class fileName attribute), a very poor visualization
+     window is brought up tracing the path of the ball.
+      - Hit any key to close the window and end the program.
  - `GuiController.kt`
-   - This class is what's used to visualize the paths created by the `Generator`.  If you run the app from the command line, you can use it to visualize any existing track.  
-   -  Use the included script to run it, like so: 
-   ```showThr.sh someThrFile.thr``` 
-   - Press any key to close window and end the program
+    - This class is what's used to visualize the paths created by the `Generator`. If you run the app from the command
+      line, you can use it to visualize any existing track.
+    - Press any key to close window and end the program
 
 
 ## Object domain

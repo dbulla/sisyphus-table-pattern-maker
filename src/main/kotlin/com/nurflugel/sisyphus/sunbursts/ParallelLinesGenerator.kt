@@ -137,23 +137,6 @@ class ParallelLinesGenerator {
         return list
     }
 
-    /** in the zone between 2 and 0, generate a list of increasing D values */
-    private fun getLinearD(): List<Double> {
-        val list = mutableListOf<Double>()
-        var d: Double = 2.0
-        val initialSpacing = d / 400.0
-        var spacing = initialSpacing
-
-
-        while (d > 0.0) {
-            list.add(d)
-            d -= spacing
-            spacing += initialSpacing * 3
-        }
-
-        return list
-    }
-
     private fun Double.formatNicely(digits: Int): String {
         val number = when {
             this > 1.0 -> 1.0

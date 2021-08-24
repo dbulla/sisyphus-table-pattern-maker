@@ -69,6 +69,7 @@ class Generator {
         FileUtils.writeLines(File(template.fileName + LocalDateTime.now()), lines)
 
         val plotterGui = GuiController()
+        plotterGui.initialize()
         plotterGui.showPreview(template.fileName, lines, false)
     }
 
