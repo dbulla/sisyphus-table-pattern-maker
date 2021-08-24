@@ -1,12 +1,11 @@
 package com.nurflugel.sisyphus.gui
 
 import org.apache.commons.io.FileUtils
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Graphics2D
-import java.awt.RenderingHints
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
+import java.awt.*
+import java.awt.Color.BLACK
+import java.awt.Color.GRAY
+import java.awt.Font.PLAIN
+import java.awt.RenderingHints.*
 import java.awt.geom.Line2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -18,9 +17,14 @@ import javax.swing.JPanel
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
+import java.awt.image.BufferedImage.TYPE_INT_RGB
+import java.nio.charset.Charset
 
 private const val WIDTH = 1000
+private const val SHUT_DOWN_WITH_KEY_PRESS = true
+private const val SLOW_GUI_DRAW = false
 
 class GuiController {
 
@@ -30,7 +34,9 @@ class GuiController {
     companion object {
         const val imagesDir = "images3"
         const val tracksDir = "tracks3"
+        const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
 
+        // run this to display an existing .thr track
         @JvmStatic
         fun main(args: Array<String>) {
             val filePath = if (args.isNotEmpty() && args.first().startsWith("thrFile=")) args.last().substringAfter("thrFile=")
@@ -38,12 +44,10 @@ class GuiController {
             //            else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/Schmigneous/focus.thr"
             else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/crsolomon/1551055361-sun-moon.thr"
             println("filePath = $filePath")
-            val lines = FileUtils.readLines(File(filePath))
+            val lines = FileUtils.readLines(File(filePath), "UTF-8")
             val plotterGui = GuiController()
             plotterGui.showPreview(filePath, lines, false)
         }
-
-        const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
     }
 
     internal fun initialize() {
@@ -53,11 +57,14 @@ class GuiController {
         frame.preferredSize = Dimension(WIDTH, WIDTH)
         frame.pack()
         frame.isVisible = true
-        //        frame.addKeyListener(object : KeyAdapter() {
-        //            override fun keyPressed(e: KeyEvent?) {
-        //                shutDown()
-        //            }
-        //        })
+
+        if (SHUT_DOWN_WITH_KEY_PRESS) {
+            frame.addKeyListener(object : KeyAdapter() {
+                override fun keyPressed(e: KeyEvent?) {
+                    shutDown()
+                }
+            })
+        }
     }
 
     internal fun shutDown() {
@@ -82,11 +89,11 @@ class GuiController {
         val scaleFactor = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
         val offset = scaleFactor
 
-        val renderingHints = RenderingHints(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON
-                                           )
+        val renderingHints = RenderingHints(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
+        renderingHints[KEY_RENDERING] = VALUE_RENDER_QUALITY;
+
         graphics2D.setRenderingHints(renderingHints)
+        graphics2D.font = Font("Helvetica", PLAIN, 13)
 
         var previousPoint: Pair<Double, Double>? = null
 
@@ -111,22 +118,23 @@ class GuiController {
             .toList()
 
 
-        val bImg = BufferedImage(guiPanel.width, guiPanel.height, BufferedImage.TYPE_INT_RGB)
+        val bImg = BufferedImage(guiPanel.width, guiPanel.height, TYPE_INT_RGB)
         val cg = bImg.createGraphics()
         guiPanel.paintAll(cg)
 
         for (currentPoint in pairs) {
-            plot(previousPoint, currentPoint, graphics2D)
+            plot(previousPoint, currentPoint, graphics2D, fileName)
             if (saveImages) {
-                printPlot(previousPoint, currentPoint, cg)
+                printPlot(previousPoint, currentPoint, cg, fileName)
             }
             previousPoint = currentPoint
         }
         try {
-            val imageFileName = File("./$imagesDir/${fileName.replace(".thr", ".png")}")
-            println("imageFileName = $imageFileName")
-            if (ImageIO.write(bImg, "png", imageFileName)) {
-                println("-- saved")
+            if (saveImages) {
+                val imageFileName = File("./$imagesDir/${fileName.replace(".thr", ".png")}")
+                if (ImageIO.write(bImg, "png", imageFileName)) {
+                    println("$imageFileName -- saved")
+                }
             }
         } catch (e: IOException) {
             // TODO Auto-generated catch block
@@ -196,41 +204,49 @@ class GuiController {
     private fun plot(
         possiblePreviousPoint: Pair<Double, Double>?,
         currentPoint: Pair<Double, Double>,
-        graphics: Graphics2D
+        graphics: Graphics2D,
+        fileName: String
                     ) {
         val previousPoint = when {
             isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
             else                            -> currentPoint
         }
         val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
-        graphics.color = Color.BLACK
+        graphics.color = BLACK
 
         graphics.draw(line)
-    }
-
-    private fun printPlot(
-        possiblePreviousPoint: Pair<Double, Double>?,
-        currentPoint: Pair<Double, Double>,
-        graphics: Graphics2D
-                         ) {
-        val previousPoint = when {
-            isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
-            else                            -> currentPoint
+        if (SLOW_GUI_DRAW) {
+            //        graphics.drawString(fileName, 20, 30);
+            graphics.drawString("-", 20, 30);
         }
-        val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
-        //        graphics.color = Color.BLACK
-        //                graphics.color = Color.WHITE
-        graphics.color = Color.GRAY
-        graphics.draw(line)
     }
+}
 
-    /** Is this a usable point?  */
-    private fun isUsable(pair: Pair<Double, Double>?): Boolean {
+private fun printPlot(
+    possiblePreviousPoint: Pair<Double, Double>?,
+    currentPoint: Pair<Double, Double>,
+    graphics: Graphics2D,
+    fileName: String
+                     ) {
+    val previousPoint = when {
+        isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
+        else                            -> currentPoint
+    }
+    val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
+    graphics.color = GRAY
+    graphics.draw(line)
+    if (SLOW_GUI_DRAW) {
+        //        graphics.drawString(fileName, 20, 30);
+        graphics.drawString("-", 20, 30);
+    }
+}
 
-        return when {
-            pair == null                              -> false
-            pair.first.isNaN() || pair.second.isNaN() -> false
-            else                                      -> true
-        }
+/** Is this a usable point?  */
+private fun isUsable(pair: Pair<Double, Double>?): Boolean {
+
+    return when {
+        pair == null                              -> false
+        pair.first.isNaN() || pair.second.isNaN() -> false
+        else                                      -> true
     }
 }

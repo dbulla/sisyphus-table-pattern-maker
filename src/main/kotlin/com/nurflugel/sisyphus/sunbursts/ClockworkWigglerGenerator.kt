@@ -31,16 +31,40 @@ class ClockworkWigglerGenerator {
             val generator = ClockworkWigglerGenerator()
             val plotterGui = GuiController()
             plotterGui.initialize()
-            for (i in 0..8000) {
-                println("count = ${count ++}")
-                val waviness: Double = i / 320.0
-                w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-                generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
+            // cheesy way of turning off the iterative generator and work from a given list instead
+            if (false) {
+                for (i in 0..8000) {
+                    println("count = ${count ++}")
+                    val waviness: Double = i / 320.0
+                    w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
+                    generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
+                }
+            } else {
+                val values = listOf(
+                    0.00000001,
+                    0.8625,
+                    1.2875,
+                    1.325,
+                    1.725,
+                    1.95,
+                    2.275,
+                    2.4,
+                    2.5875,
+                    4.1,
+                    4.3375,
+                    26.85,
+                    30.0,
+                    40.0
+                                   )
+                for (waviness in values) {
+                    w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
+                    generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
+                }
             }
-            // uncomment below to auto-shutdown, rather than waiting for the user to press a key stroke
-            //            plotterGui.shutDown()
-
+            // uncomment below to auto-shutdown, rather than waiting for the user to press a keystroke
+            plotterGui.shutDown()
         }
+
     }
 
 
@@ -106,7 +130,7 @@ class ClockworkWigglerGenerator {
         FileUtils.forceMkdir(File(imagesDir))
         FileUtils.writeLines(File("$tracksDir/$fileName"), output)
 
-        plotterGui.showPreview(fileName, output, false) // show the preview
+        plotterGui.showPreview(fileName, output, true) // show the preview
         println("Done!")
     }
 
