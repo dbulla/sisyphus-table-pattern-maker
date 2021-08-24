@@ -1,42 +1,43 @@
-## Welcome to GitHub Pages
+## Welcome to my Sisyphus table pattern generator!
 
-You can use the [editor on GitHub](https://github.com/dbulla/sisyphus-table-pattern-maker/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+### What is it?
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Sample animation
+[10,000 image animation](http://www.nurflugel.com/Home/temp/video/fullSize.html)
+[10,000 image animation - direct](http://www.nurflugel.com/Home/temp/video/1000_antialiased.mp4)
 
-### Markdown
+### ffmpg
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+`ffmpg` is the tool I used to stitch the thousands of images together into a .mp4 MPEG.
 
-```markdown
-Syntax highlighted code block
+I used [Name Mangler](https://manytricks.com/namemangler) to take all the thousands of files with the descriptive names,
+and rename them into sequential files that `ffmpeg` needs.  `Name Mangler` does this handily, including inserting
+prefacing "0"s so you get files like `image_00001` instead of `image_1`.
 
-# Header 1
-## Header 2
-### Header 3
+You can install ffmpeg via Homebrew - simply do
+```brew install ffmpeg```
+I LOVE Homebrew for stuff like this!
 
-- Bulleted
-- List
+Once installed, say you've got an `image` dircetory where all yoru images are output. Then, you'd type in something like
+this:
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```
+ffmpeg  -r 20 -f image2 -s 600x600 -i images/image_%5d.png -vcodec libx264 -crf 25 -n -pix_fmt yuv420p my_movie.mp4
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+NOTE:  the bit `images/image_%5d.png` above tells it to take any files with 5 numbers in it (that's what that `%5d`
+means - It's very important that you do NOT use `*` instead, as the shell will expand that out, and that's not what the
+program needs.
 
-[Animation](output.mp4)
+Once generated, the size seems independent of what I tried to specify above with the `-s 600x600`, so I do another run
+which will resize it:
 
-### Jekyll Themes
+```
+ffmpeg -i my_movie.mp4 -vf scale=600:600 my_movie_600x600.mp4
+```
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in
-your [repository settings](https://github.com/dbulla/sisyphus-table-pattern-maker/settings/pages). The name of this
-theme is saved in the Jekyll `_config.yml` configuration file.
+### Quality & Sharing
 
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/)
-or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+The `x264` codec makes everything look nice - but because of the graphics nature, the files get large - gigabytes.  
+I've not found any way to share these on Flickr or YouTube that doesn't result in them resampling them and making them
+look like crap - but I have my own web domain, so uploading them there and linking works just fine.
