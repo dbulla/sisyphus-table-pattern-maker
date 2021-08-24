@@ -3,8 +3,6 @@
 ### What is it?
 
 Sample animation
-- [8,000 image animation - page with autoplay](http://www.nurflugel.com/Home/temp/video/fullSize.html)
-- [10,000 image animation - page with autoplay](http://www.nurflugel.com/Home/temp/video/plots1.html)
 - [10,000 image animation - direct link](http://www.nurflugel.com/Home/temp/video/sisyphus_plots_1.mp4)
 
 ### ffmpg
