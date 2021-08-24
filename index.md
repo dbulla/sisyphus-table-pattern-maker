@@ -3,8 +3,8 @@
 ### What is it?
 
 Sample animation
-[10,000 image animation](http://www.nurflugel.com/Home/temp/video/fullSize.html)
-[10,000 image animation - direct](http://www.nurflugel.com/Home/temp/video/1000_antialiased.mp4)
+- [10,000 image animation - page with autoplay](http://www.nurflugel.com/Home/temp/video/fullSize.html)
+- [10,000 image animation - direct link](http://www.nurflugel.com/Home/temp/video/1000_antialiased.mp4)
 
 ### ffmpg
 
@@ -18,7 +18,7 @@ You can install ffmpeg via Homebrew - simply do
 ```brew install ffmpeg```
 I LOVE Homebrew for stuff like this!
 
-Once installed, say you've got an `image` dircetory where all yoru images are output. Then, you'd type in something like
+Once installed, say you've got an `image` directory where all your images are output. Then, you'd type in something like
 this:
 
 ```
@@ -39,5 +39,6 @@ ffmpeg -i my_movie.mp4 -vf scale=600:600 my_movie_600x600.mp4
 ### Quality & Sharing
 
 The `x264` codec makes everything look nice - but because of the graphics nature, the files get large - gigabytes.  
+
 I've not found any way to share these on Flickr or YouTube that doesn't result in them resampling them and making them
 look like crap - but I have my own web domain, so uploading them there and linking works just fine.
