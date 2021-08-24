@@ -13,9 +13,9 @@ Sample animation
 
 I used [Name Mangler](https://manytricks.com/namemangler) to take all the thousands of files with the descriptive names,
 and rename them into sequential files that `ffmpeg` needs.  `Name Mangler` does this handily, including inserting
-prefacing "0"s so you get files like `image_00001` instead of `image_1`.
+prefacing "0"s, so you get files like `image_00001` instead of `image_1`.
 
-You can install ffmpeg via Homebrew - simply do
+You can install `ffmpeg` via Homebrew - simply do
 ```brew install ffmpeg```
 I LOVE Homebrew for stuff like this!
 
@@ -37,7 +37,7 @@ which will resize it:
 ffmpeg -i my_movie.mp4 -vf scale=600:600 my_movie_600x600.mp4
 ```
 
-### Quality & Sharing
+### Video Quality & Sharing
 
 The `x264` codec makes everything look nice - but because of the graphics nature, the files get large - gigabytes.  
 
