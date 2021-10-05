@@ -3,8 +3,9 @@ package com.nurflugel.sisyphus.sunbursts
 import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Point.Companion.pointFromRad
 import com.nurflugel.sisyphus.gui.GuiPreviewer
-import com.nurflugel.sisyphus.gui.GuiPreviewer.Companion.imagesDir
-import com.nurflugel.sisyphus.gui.GuiPreviewer.Companion.tracksDir
+import com.nurflugel.sisyphus.gui.GuiUtils.Companion.imagesDir
+import com.nurflugel.sisyphus.gui.GuiUtils.Companion.tracksDir
+import com.nurflugel.sisyphus.gui.ImageWriterController
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
@@ -32,16 +33,27 @@ class ClockworkWigglerGenerator {
         private const val end: Int = 501;
         private const val showNames: Boolean = false
         private const val writeTracks: Boolean = false
-        private const val showPreview: Boolean = true
+        private const val showPreview: Boolean = false
         private const val saveImages: Boolean = true
 
         @JvmStatic
         fun main(args: Array<String>) {
-            val generator = ClockworkWigglerGenerator()
-            val plotterGui = GuiPreviewer()
-            plotterGui.initialize()
 
-            if (false) { // cheesy way of turning off the iterative generator and work from a given list instead, w/o commenting out the code
+            val generator = ClockworkWigglerGenerator()
+            val plotterGui: GuiPreviewer? = if (showPreview) GuiPreviewer() else null
+            val imageWriterController: ImageWriterController? = if (saveImages) ImageWriterController() else null
+            //            val headlessValue = System.getProperty("java.awt.headless")
+            //            System.setProperty("java.awt.headless", null)
+            if (showPreview && plotterGui != null) {
+                plotterGui.initialize()
+            } else {
+                System.setProperty("java.awt.headless", "true")
+            }
+            if (saveImages && imageWriterController != null) {
+                imageWriterController.initialize()
+            }
+
+            if (true) { // cheesy way of turning off the iterative generator and work from a given list instead, w/o commenting out the code
                 val startTime = Instant.now()
                 for (i in (start * multiplier) - 1..(end * multiplier)) {
                     val now = Instant.now()
@@ -52,7 +64,7 @@ class ClockworkWigglerGenerator {
                     }
                     val waviness: Double = i.toDouble() / multiplier.toDouble()
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-                    generator.doIt(waviness, createImageFileBaseName(count), createTrackFileName(waviness), plotterGui)
+                    generator.doIt(waviness, createImageFileBaseName(count), createTrackFileName(waviness), plotterGui, imageWriterController)
                 }
             } else { // we want JUST these specific values
                 val values = listOf(
@@ -71,11 +83,12 @@ class ClockworkWigglerGenerator {
                                    )
                 for (waviness in values) {
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-                    generator.doIt(waviness, createImageFileBaseName(count ++), createTrackFileName(waviness), plotterGui)
+                    generator.doIt(waviness, createImageFileBaseName(count ++), createTrackFileName(waviness), plotterGui, imageWriterController)
                 }
             }
             // uncomment below to auto-shutdown, rather than waiting for the user to press a keystroke
-            plotterGui.shutDown()
+            if (showPreview)
+                plotterGui !!.shutDown()
         }
 
         // image files need to have a numeric sequence so they can be converted to animations
@@ -101,7 +114,7 @@ class ClockworkWigglerGenerator {
      * Requirements - all r0 through rn MUST equal 1 for the table to start nicely.  Else, add an extra start point at rho=0 or 1 to appease the table gods.
      *
      */
-    fun doIt(waviness: Double, imageFileName: String, trackFileName: String, plotterGui: GuiPreviewer) {
+    fun doIt(waviness: Double, imageFileName: String, trackFileName: String, plotterGui: GuiPreviewer?, imageWriterController: ImageWriterController?) {
         w0 = 2 * PI / numberOfTicksPerTurn
         w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
         println(
@@ -153,11 +166,11 @@ class ClockworkWigglerGenerator {
             FileUtils.forceMkdir(File(tracksDir))
             FileUtils.writeLines(File("$tracksDir/$trackFileName"), output)
         }
-        if (showPreview) {
+        if (showPreview && plotterGui != null) {
             plotterGui.showPreview(trackFileName, output, showNames) // show the preview && write the images to disk
         }
-        if (saveImages) {
-            plotterGui.writeImage(imageFileName, output, showNames) //write the images to disk
+        if (saveImages && imageWriterController != null) {
+            imageWriterController.writeImage(imageFileName, output, showNames) //write the images to disk
         }
         println("Done!")
     }
