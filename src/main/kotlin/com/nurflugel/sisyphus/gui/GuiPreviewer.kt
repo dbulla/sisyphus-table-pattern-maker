@@ -20,6 +20,7 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage.TYPE_INT_RGB
 import java.awt.GraphicsEnvironment
+import javax.swing.BorderFactory
 
 
 //private const val WIDTH = 1920
@@ -29,7 +30,7 @@ private const val HEIGHT = 1440
 
 private const val SHUT_DOWN_WITH_KEY_PRESS = false
 
-class GuiController {
+class GuiPreviewer {
 
     private val frame = JFrame()
     private var guiPanel = JPanel()
@@ -59,7 +60,7 @@ class GuiController {
             else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/crsolomon/1551055361-sun-moon.thr"
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath), "UTF-8")
-            val plotterGui = GuiController()
+            val plotterGui = GuiPreviewer()
             plotterGui.showPreview(filePath, lines, false)
         }
     }
@@ -68,20 +69,24 @@ class GuiController {
         val gd = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice
         val width = gd.displayMode.width
         val height = gd.displayMode.height
-        println("       width from device = ${width}")
-        println("       height from device = ${height}")
+        println("       width from device = $width")
+        println("       height from device = $height")
         frame.title = "Click any key to close"
+        frame.isUndecorated = true
+        frame.rootPane.border = BorderFactory.createEmptyBorder();
+
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
         frame.pack()
+        frame.preferredSize = Dimension(WIDTH, HEIGHT) // todo need to add 45
+        frame.minimumSize = Dimension(WIDTH, HEIGHT) // todo need to add 45
         //        frame.preferredSize = Dimension(WIDTH, HEIGHT + 45) // todo need to add 45
         //        frame.size = Dimension(WIDTH, HEIGHT + 45)
-        frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        //        frame.size = Toolkit.getDefaultToolkit().screenSize;
         frame.extendedState = JFrame.MAXIMIZED_BOTH;
-        //        frame.pack()
-        frame.isVisible = false
 
-
+        println("       width from frame = ${frame.size.width}")
+        println("       height from frame = ${frame.size.height}")
 
         if (SHUT_DOWN_WITH_KEY_PRESS) {
             frame.addKeyListener(object : KeyAdapter() {

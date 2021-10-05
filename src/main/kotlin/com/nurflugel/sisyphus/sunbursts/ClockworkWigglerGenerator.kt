@@ -2,9 +2,9 @@ package com.nurflugel.sisyphus.sunbursts
 
 import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Point.Companion.pointFromRad
-import com.nurflugel.sisyphus.gui.GuiController
-import com.nurflugel.sisyphus.gui.GuiController.Companion.imagesDir
-import com.nurflugel.sisyphus.gui.GuiController.Companion.tracksDir
+import com.nurflugel.sisyphus.gui.GuiPreviewer
+import com.nurflugel.sisyphus.gui.GuiPreviewer.Companion.imagesDir
+import com.nurflugel.sisyphus.gui.GuiPreviewer.Companion.tracksDir
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
@@ -38,10 +38,10 @@ class ClockworkWigglerGenerator {
         @JvmStatic
         fun main(args: Array<String>) {
             val generator = ClockworkWigglerGenerator()
-            val plotterGui = GuiController()
+            val plotterGui = GuiPreviewer()
             plotterGui.initialize()
 
-            if (true) { // cheesy way of turning off the iterative generator and work from a given list instead, w/o commenting out the code
+            if (false) { // cheesy way of turning off the iterative generator and work from a given list instead, w/o commenting out the code
                 val startTime = Instant.now()
                 for (i in (start * multiplier) - 1..(end * multiplier)) {
                     val now = Instant.now()
@@ -56,22 +56,22 @@ class ClockworkWigglerGenerator {
                 }
             } else { // we want JUST these specific values
                 val values = listOf(
-                        0.00000001,
-                        0.8625,
-                        1.2875,
-                        1.325,
-                        1.725,
-                        1.95,
-                        2.275,
-                        2.4,
-                        2.5875,
+                        //                        0.00000001,
+                        //                        0.8625,
+                        //                        1.2875,
+                        //                        1.325,
+                        //                        1.725,
+                        //                        1.95,
+                        //                        2.275,
+                        //                        2.4,
+                        //                        2.5875,
                         4.1,
                         4.3375,
                         26.85,
                                    )
                 for (waviness in values) {
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-                    generator.doIt(waviness, createImageFileBaseName(count), createTrackFileName(waviness), plotterGui)
+                    generator.doIt(waviness, createImageFileBaseName(count ++), createTrackFileName(waviness), plotterGui)
                 }
             }
             // uncomment below to auto-shutdown, rather than waiting for the user to press a keystroke
@@ -101,7 +101,7 @@ class ClockworkWigglerGenerator {
      * Requirements - all r0 through rn MUST equal 1 for the table to start nicely.  Else, add an extra start point at rho=0 or 1 to appease the table gods.
      *
      */
-    fun doIt(waviness: Double, imageFileName: String, trackFileName: String, plotterGui: GuiController) {
+    fun doIt(waviness: Double, imageFileName: String, trackFileName: String, plotterGui: GuiPreviewer) {
         w0 = 2 * PI / numberOfTicksPerTurn
         w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
         println(

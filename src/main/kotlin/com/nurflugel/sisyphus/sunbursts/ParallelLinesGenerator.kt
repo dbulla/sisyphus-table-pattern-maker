@@ -2,7 +2,7 @@ package com.nurflugel.sisyphus.sunbursts
 
 import com.nurflugel.sisyphus.domain.LinearSegment
 import com.nurflugel.sisyphus.domain.Point.Companion.pointFromRad
-import com.nurflugel.sisyphus.gui.GuiController
+import com.nurflugel.sisyphus.gui.GuiPreviewer
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
@@ -115,7 +115,7 @@ class ParallelLinesGenerator {
 
         FileUtils.writeLines(File("parallel_lines.thr"), output)
 
-        val plotterGui = GuiController()
+        val plotterGui = GuiPreviewer()
         plotterGui.showPreview("parallel_lines.thr", output, false)
         println("Done!")
     }

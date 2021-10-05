@@ -4,7 +4,7 @@ import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Point.Companion.isRhoPracticallyOne
 import com.nurflugel.sisyphus.domain.Point.Companion.isRhoPracticallyZero
 import com.nurflugel.sisyphus.domain.Shape
-import com.nurflugel.sisyphus.gui.GuiController
+import com.nurflugel.sisyphus.gui.GuiPreviewer
 import com.nurflugel.sisyphus.shapes.Rectangle
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -67,7 +67,7 @@ class Generator {
 
         FileUtils.writeLines(File(template.fileName + LocalDateTime.now()), lines)
 
-        val plotterGui = GuiController()
+        val plotterGui = GuiPreviewer()
         plotterGui.initialize()
         plotterGui.showPreview(template.fileName, lines, false)
     }
