@@ -119,7 +119,7 @@ class SunburstGenerator {
         FileUtils.writeLines(File("inwards_sunburst.thr"), output)
 
         val plotterGui = GuiController()
-        plotterGui.showPreview("inwards_sunburst.thr", output, false)
+        plotterGui.showPreview("inwards_sunburst.thr", output, false, false)
         println("Done!")
 
 

@@ -1,5 +1,7 @@
 package com.nurflugel.sisyphus.gui
 
+import com.nurflugel.sisyphus.gui.GuiController.Companion.aliasedRenderingHints
+import com.nurflugel.sisyphus.gui.GuiController.Companion.nonAliasedRenderingHints
 import org.apache.commons.io.FileUtils
 import java.awt.*
 import java.awt.Color.BLACK
@@ -20,11 +22,15 @@ import kotlin.math.sin
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage.TYPE_INT_RGB
-import java.nio.charset.Charset
 
-private const val WIDTH = 1000
-private const val SHUT_DOWN_WITH_KEY_PRESS = true
-private const val SLOW_GUI_DRAW = false
+//private const val WIDTH = 1920
+//private const val HEIGHT = 1080 //1058
+private const val WIDTH = 2560
+private const val HEIGHT = 1440 // 1395
+
+// 1920x1080
+private const val SHUT_DOWN_WITH_KEY_PRESS = false
+//private const val SLOW_GUI_DRAW = false
 
 class GuiController {
 
@@ -32,9 +38,20 @@ class GuiController {
     private var guiPanel = JPanel()
 
     companion object {
-        const val imagesDir = "images3"
-        const val tracksDir = "tracks3"
+        const val imagesDir = "images4"
+        const val tracksDir = "tracks4"
         const val maxDeltaTheta = 1.0 / 180.0 * PI // one degree max theta
+        val aliasedRenderingHints = run {
+            val hints = RenderingHints(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
+            hints[KEY_RENDERING] = VALUE_RENDER_QUALITY;
+            hints[KEY_ANTIALIASING] = VALUE_ANTIALIAS_OFF;
+            hints;
+        }
+        val nonAliasedRenderingHints = run {
+            val hints = RenderingHints(KEY_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF)
+            hints[KEY_RENDERING] = VALUE_RENDER_QUALITY
+            hints
+        }
 
         // run this to display an existing .thr track
         @JvmStatic
@@ -46,7 +63,7 @@ class GuiController {
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath), "UTF-8")
             val plotterGui = GuiController()
-            plotterGui.showPreview(filePath, lines, false)
+            plotterGui.showPreview(filePath, lines, false, false)
         }
     }
 
@@ -54,9 +71,11 @@ class GuiController {
         frame.title = "Click any key to close"
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
-        frame.preferredSize = Dimension(WIDTH, WIDTH)
+        frame.preferredSize = Dimension(WIDTH, HEIGHT + 45) // todo need to add 45
+        frame.size = Dimension(WIDTH, HEIGHT + 45)
         frame.pack()
-        frame.isVisible = true
+        frame.isVisible = false
+        //        frame.isVisible = true
 
         if (SHUT_DOWN_WITH_KEY_PRESS) {
             frame.addKeyListener(object : KeyAdapter() {
@@ -76,7 +95,7 @@ class GuiController {
 
     private fun getGraphicsContext() = guiPanel
 
-    fun showPreview(fileName: String, lines: MutableList<String>, saveImages: Boolean) {
+    fun showPreview(fileName: String, lines: MutableList<String>, saveImages: Boolean, showNames: Boolean) {
         // initial point of null
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
@@ -86,13 +105,12 @@ class GuiController {
         val graphicsContext = getGraphicsContext()
         val graphics2D = graphicsContext.graphics as Graphics2D
         graphics2D.clearRect(0, 0, graphicsContext.width, graphicsContext.height)
-        val scaleFactor = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
-        val offset = scaleFactor
+        val scaleFactorY = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
+        val scaleFactorX = graphicsContext.size.width / 2 // 2 * rho=1 gives two 
+        val offsetX = scaleFactorX * 1 // todo x and y
+        val offsetY = scaleFactorY * 1 // todo x and y
 
-        val renderingHints = RenderingHints(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
-        renderingHints[KEY_RENDERING] = VALUE_RENDER_QUALITY;
-
-        graphics2D.setRenderingHints(renderingHints)
+        graphics2D.setRenderingHints(aliasedRenderingHints)
         graphics2D.font = Font("Helvetica", PLAIN, 13)
 
         var previousPoint: Pair<Double, Double>? = null
@@ -113,7 +131,7 @@ class GuiController {
         val pairs = expandedPolarPairs
             // here is where we need to take the pairs of pairs, and deal with delta thetas
             .map { convertToXy(it) }
-            .map { convertToScreenCoords(it, scaleFactor, offset) }
+            .map { convertToScreenCoords(it, scaleFactorY, offsetX, offsetY) }
             .filter { isUsable(it) }
             .toList()
 
@@ -123,9 +141,9 @@ class GuiController {
         guiPanel.paintAll(cg)
 
         for (currentPoint in pairs) {
-            plot(previousPoint, currentPoint, graphics2D, fileName)
+            plot(previousPoint, currentPoint, graphics2D, fileName, showNames)
             if (saveImages) {
-                printPlot(previousPoint, currentPoint, cg, fileName)
+                printPlot(previousPoint, currentPoint, cg, fileName, showNames)
             }
             previousPoint = currentPoint
         }
@@ -187,9 +205,8 @@ class GuiController {
     }
 
     /** Convert the XY coordinates to screen coordinates - deal with scaling and offsets*/
-    private fun convertToScreenCoords(xy: Pair<Double, Double>, scaleFactor: Int, offset: Int): Pair<Double, Double> {
-        return Pair(xy.first * scaleFactor + offset, xy.second * scaleFactor + offset)
-
+    private fun convertToScreenCoords(xy: Pair<Double, Double>, scaleFactor: Int, offsetX: Int, offsetY: Int): Pair<Double, Double> {
+        return Pair(xy.first * scaleFactor + offsetX, xy.second * scaleFactor + offsetY)
     }
 
     private fun convertLineToPair(line: String): Pair<Double, Double>? {
@@ -202,10 +219,11 @@ class GuiController {
 
     /** Draw a line in the context between the two points */
     private fun plot(
-        possiblePreviousPoint: Pair<Double, Double>?,
-        currentPoint: Pair<Double, Double>,
-        graphics: Graphics2D,
-        fileName: String
+            possiblePreviousPoint: Pair<Double, Double>?,
+            currentPoint: Pair<Double, Double>,
+            graphics: Graphics2D,
+            fileName: String,
+            showName: Boolean,
                     ) {
         val previousPoint = when {
             isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
@@ -215,18 +233,21 @@ class GuiController {
         graphics.color = BLACK
 
         graphics.draw(line)
-        if (SLOW_GUI_DRAW) {
-            //        graphics.drawString(fileName, 20, 30);
-            graphics.drawString("-", 20, 30);
+        if (showName) {
+            //            graphics.setRenderingHints(nonAliasedRenderingHints)
+            graphics.drawString(fileName, 20, 30);
+            //            graphics.setRenderingHints(aliasedRenderingHints)
         }
     }
 }
 
+
 private fun printPlot(
-    possiblePreviousPoint: Pair<Double, Double>?,
-    currentPoint: Pair<Double, Double>,
-    graphics: Graphics2D,
-    fileName: String
+        possiblePreviousPoint: Pair<Double, Double>?,
+        currentPoint: Pair<Double, Double>,
+        graphics: Graphics2D,
+        fileName: String,
+        showName: Boolean,
                      ) {
     val previousPoint = when {
         isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
@@ -235,9 +256,10 @@ private fun printPlot(
     val line = Line2D.Double(previousPoint.first, previousPoint.second, currentPoint.first, currentPoint.second)
     graphics.color = GRAY
     graphics.draw(line)
-    if (SLOW_GUI_DRAW) {
-        //        graphics.drawString(fileName, 20, 30);
-        graphics.drawString("-", 20, 30);
+    if (showName) {
+        //        graphics.setRenderingHints(nonAliasedRenderingHints)
+        graphics.drawString(fileName, 20, 30);
+        //        graphics.setRenderingHints(aliasedRenderingHints)
     }
 }
 

@@ -9,6 +9,9 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
 import java.nio.charset.Charset
+import java.time.Duration
+import java.time.Instant
+import java.util.stream.Stream
 import kotlin.math.acos
 import kotlin.math.cos
 
@@ -25,36 +28,44 @@ class ClockworkWigglerGenerator {
         const val deltaRhoPerTurn = .01
         const val thetaAdvance = 1.3
         var count = 0;
+        private const val multiplier: Int = 320 * 4;
+        private const val start: Int = 0;
+        private const val end: Int = 501;
+        private const val showNames: Boolean = false
 
         @JvmStatic
         fun main(args: Array<String>) {
             val generator = ClockworkWigglerGenerator()
             val plotterGui = GuiController()
             plotterGui.initialize()
-            // cheesy way of turning off the iterative generator and work from a given list instead
-            if (false) {
-                for (i in 0..8000) {
-                    println("count = ${count ++}")
-                    val waviness: Double = i / 320.0
+
+            if (true) { // cheesy way of turning off the iterative generator and work from a given list instead, w/o commenting out the code
+                val startTime = Instant.now()
+                for (i in (start * multiplier) - 1..(end * multiplier)) {
+                    val now = Instant.now()
+                    val duration = Duration.between(startTime, now).toMillis()
+                    println("count = ${count ++} ")
+                    if (count > 0 && duration > 0) {
+                        println("speed = ${count / (duration.toFloat() / 1000)} images/sec")
+                    }
+                    val waviness: Double = i.toDouble() / multiplier.toDouble()
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
                     generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
                 }
-            } else {
+            } else { // we want JUST these specific values
                 val values = listOf(
-                    0.00000001,
-                    0.8625,
-                    1.2875,
-                    1.325,
-                    1.725,
-                    1.95,
-                    2.275,
-                    2.4,
-                    2.5875,
-                    4.1,
-                    4.3375,
-                    26.85,
-                    30.0,
-                    40.0
+                        0.00000001,
+                        0.8625,
+                        1.2875,
+                        1.325,
+                        1.725,
+                        1.95,
+                        2.275,
+                        2.4,
+                        2.5875,
+                        4.1,
+                        4.3375,
+                        26.85,
                                    )
                 for (waviness in values) {
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
@@ -82,7 +93,7 @@ class ClockworkWigglerGenerator {
         w0 = 2 * PI / numberOfTicksPerTurn
         w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
         println(
-            """
+                """
 |   numberOfCounts = $numberOfTicks
 |   numberOfRhos =   $numberOfRhos
 |   waviness =       $waviness
@@ -130,7 +141,7 @@ class ClockworkWigglerGenerator {
         FileUtils.forceMkdir(File(imagesDir))
         FileUtils.writeLines(File("$tracksDir/$fileName"), output)
 
-        plotterGui.showPreview(fileName, output, true) // show the preview
+        plotterGui.showPreview(fileName, output, true, showNames) // show the preview
         println("Done!")
     }
 

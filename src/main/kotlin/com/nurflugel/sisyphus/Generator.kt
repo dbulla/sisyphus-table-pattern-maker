@@ -70,7 +70,7 @@ class Generator {
 
         val plotterGui = GuiController()
         plotterGui.initialize()
-        plotterGui.showPreview(template.fileName, lines, false)
+        plotterGui.showPreview(template.fileName, lines, false, false)
     }
 
     /**

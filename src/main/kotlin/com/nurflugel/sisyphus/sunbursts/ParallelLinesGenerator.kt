@@ -116,7 +116,7 @@ class ParallelLinesGenerator {
         FileUtils.writeLines(File("parallel_lines.thr"), output)
 
         val plotterGui = GuiController()
-        plotterGui.showPreview("parallel_lines.thr", output, false)
+        plotterGui.showPreview("parallel_lines.thr", output, false, false)
         println("Done!")
     }
 
