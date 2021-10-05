@@ -1,7 +1,5 @@
 package com.nurflugel.sisyphus.gui
 
-import com.nurflugel.sisyphus.gui.GuiController.Companion.aliasedRenderingHints
-import com.nurflugel.sisyphus.gui.GuiController.Companion.nonAliasedRenderingHints
 import org.apache.commons.io.FileUtils
 import java.awt.*
 import java.awt.Color.BLACK
@@ -11,7 +9,6 @@ import java.awt.RenderingHints.*
 import java.awt.geom.Line2D
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.IOException
 import javax.imageio.ImageIO
 import javax.swing.JFrame
 import javax.swing.JFrame.EXIT_ON_CLOSE
@@ -22,15 +19,15 @@ import kotlin.math.sin
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage.TYPE_INT_RGB
+import java.awt.GraphicsEnvironment
+
 
 //private const val WIDTH = 1920
-//private const val HEIGHT = 1080 //1058
+//private const val HEIGHT = 1080 
 private const val WIDTH = 2560
-private const val HEIGHT = 1440 // 1395
+private const val HEIGHT = 1440
 
-// 1920x1080
 private const val SHUT_DOWN_WITH_KEY_PRESS = false
-//private const val SLOW_GUI_DRAW = false
 
 class GuiController {
 
@@ -63,19 +60,28 @@ class GuiController {
             println("filePath = $filePath")
             val lines = FileUtils.readLines(File(filePath), "UTF-8")
             val plotterGui = GuiController()
-            plotterGui.showPreview(filePath, lines, false, false)
+            plotterGui.showPreview(filePath, lines, false)
         }
     }
 
     internal fun initialize() {
+        val gd = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice
+        val width = gd.displayMode.width
+        val height = gd.displayMode.height
+        println("       width from device = ${width}")
+        println("       height from device = ${height}")
         frame.title = "Click any key to close"
         frame.contentPane = guiPanel
         frame.defaultCloseOperation = EXIT_ON_CLOSE
-        frame.preferredSize = Dimension(WIDTH, HEIGHT + 45) // todo need to add 45
-        frame.size = Dimension(WIDTH, HEIGHT + 45)
         frame.pack()
+        //        frame.preferredSize = Dimension(WIDTH, HEIGHT + 45) // todo need to add 45
+        //        frame.size = Dimension(WIDTH, HEIGHT + 45)
+        frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        frame.extendedState = JFrame.MAXIMIZED_BOTH;
+        //        frame.pack()
         frame.isVisible = false
-        //        frame.isVisible = true
+
+
 
         if (SHUT_DOWN_WITH_KEY_PRESS) {
             frame.addKeyListener(object : KeyAdapter() {
@@ -95,13 +101,15 @@ class GuiController {
 
     private fun getGraphicsContext() = guiPanel
 
-    fun showPreview(fileName: String, lines: MutableList<String>, saveImages: Boolean, showNames: Boolean) {
+    // todo split this up into showPreview and writeImage - clearer, easier to turn on/off what's desired
+    fun showPreview(trackFileName: String, lines: MutableList<String>, showNames: Boolean) {
         // initial point of null
         // go through lines, read new current point  if not a comment/empty
         // draw line from previous point to this point
         // current point becomes previous point
-        frame.title = "$fileName     Click any key to close"
-
+        frame.isVisible = true
+        frame.title = "$trackFileName     Click any key to close"
+        // todo reset the values for scales based on the present GUI size
         val graphicsContext = getGraphicsContext()
         val graphics2D = graphicsContext.graphics as Graphics2D
         graphics2D.clearRect(0, 0, graphicsContext.width, graphicsContext.height)
@@ -115,6 +123,65 @@ class GuiController {
 
         var previousPoint: Pair<Double, Double>? = null
 
+        val graphicsPairs = createGraphicsCoordinates(lines, scaleFactorY, offsetX, offsetY)
+
+        val bImg = BufferedImage(guiPanel.width, guiPanel.height, TYPE_INT_RGB)
+        val cg = bImg.createGraphics()
+        guiPanel.paintAll(cg)
+
+        for (currentPoint in graphicsPairs) {
+            drawUiPreview(previousPoint, currentPoint, graphics2D, trackFileName, showNames)
+            previousPoint = currentPoint
+        }
+        guiPanel.parent.isVisible = false
+    }
+
+    // todo split this up into showPreview and writeImage - clearer, easier to turn on/off what's desired
+    fun writeImage(imageFileName: String, lines: MutableList<String>, showNames: Boolean) {
+        // initial point of null
+        // go through lines, read new current point  if not a comment/empty
+        // draw line from previous point to this point
+        // current point becomes previous point
+        val graphicsContext = getGraphicsContext()
+        val graphics2D = graphicsContext.graphics as Graphics2D
+        graphics2D.clearRect(0, 0, graphicsContext.width, graphicsContext.height)
+        val scaleFactorY = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
+        val scaleFactorX = graphicsContext.size.width / 2 // 2 * rho=1 gives two 
+        val offsetX = scaleFactorX * 1 // todo x and y
+        val offsetY = scaleFactorY * 1 // todo x and y
+
+        graphics2D.setRenderingHints(aliasedRenderingHints)
+        graphics2D.font = Font("Helvetica", PLAIN, 13)
+
+        var previousPoint: Pair<Double, Double>? = null
+
+        val graphicsPairs = createGraphicsCoordinates(lines, scaleFactorY, offsetX, offsetY)
+
+        val bImg = BufferedImage(guiPanel.width, guiPanel.height, TYPE_INT_RGB)
+        val cg = bImg.createGraphics()
+        guiPanel.paintAll(cg)
+
+        for (currentPoint in graphicsPairs) {
+            drawImageToSave(previousPoint, currentPoint, cg, imageFileName, showNames)
+            previousPoint = currentPoint
+        }
+        val imageFile = File("./$imagesDir/${imageFileName}")
+        if (ImageIO.write(bImg, "png", imageFile)) {
+            println("$imageFile -- saved")
+        }
+    }
+
+    /** This function takes the raw rho/theta pairs, cleans them up, removes
+     * any comments, then "expands" to handle converting lines between two into a series of rho/theta arcs which approximates that line.
+     *
+     * Finally, converts them into graphics coordinates suitable for plotting/printing.
+     */
+    private fun createGraphicsCoordinates(
+            lines: MutableList<String>,
+            scaleFactorY: Int, // how much to scale by.  Assumption is that scaleFactorY==scaleFactorX (i.e., equal scaling)
+            offsetX: Int,
+            offsetY: Int,
+                                         ): List<Pair<Double, Double>> {
         val polarPairs: List<Pair<Double, Double>> = lines
             .asSequence()
             .filter { it.isNotBlank() }
@@ -134,36 +201,14 @@ class GuiController {
             .map { convertToScreenCoords(it, scaleFactorY, offsetX, offsetY) }
             .filter { isUsable(it) }
             .toList()
-
-
-        val bImg = BufferedImage(guiPanel.width, guiPanel.height, TYPE_INT_RGB)
-        val cg = bImg.createGraphics()
-        guiPanel.paintAll(cg)
-
-        for (currentPoint in pairs) {
-            plot(previousPoint, currentPoint, graphics2D, fileName, showNames)
-            if (saveImages) {
-                printPlot(previousPoint, currentPoint, cg, fileName, showNames)
-            }
-            previousPoint = currentPoint
-        }
-        try {
-            if (saveImages) {
-                val imageFileName = File("./$imagesDir/${fileName.replace(".thr", ".png")}")
-                if (ImageIO.write(bImg, "png", imageFileName)) {
-                    println("$imageFileName -- saved")
-                }
-            }
-        } catch (e: IOException) {
-            // TODO Auto-generated catch block
-            e.printStackTrace()
-        }
-        guiPanel.parent.isVisible = false
+        return pairs
     }
 
     /**
      * for every pair and the next pair, see if the delta theta is large enough (> 1 degree or so)
-     * to need to subdivide that pair of pairs into a list of pairs
+     * to need to subdivide that pair of pairs into a list of pairs.
+     *
+     * This "expands" the points, converting lines between two points into a series of rho/theta arcs which approximates that line.
      */
     private fun handleDeltaTheta(polarPairs: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
         val expandedPairs: MutableList<Pair<Double, Double>> = mutableListOf()
@@ -218,13 +263,13 @@ class GuiController {
     }
 
     /** Draw a line in the context between the two points */
-    private fun plot(
+    private fun drawUiPreview(
             possiblePreviousPoint: Pair<Double, Double>?,
             currentPoint: Pair<Double, Double>,
             graphics: Graphics2D,
             fileName: String,
             showName: Boolean,
-                    ) {
+                             ) {
         val previousPoint = when {
             isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
             else                            -> currentPoint
@@ -242,13 +287,13 @@ class GuiController {
 }
 
 
-private fun printPlot(
+private fun drawImageToSave(
         possiblePreviousPoint: Pair<Double, Double>?,
         currentPoint: Pair<Double, Double>,
         graphics: Graphics2D,
         fileName: String,
         showName: Boolean,
-                     ) {
+                           ) {
     val previousPoint = when {
         isUsable(possiblePreviousPoint) -> possiblePreviousPoint !!
         else                            -> currentPoint

@@ -11,7 +11,6 @@ import java.lang.Math.PI
 import java.nio.charset.Charset
 import java.time.Duration
 import java.time.Instant
-import java.util.stream.Stream
 import kotlin.math.acos
 import kotlin.math.cos
 
@@ -32,6 +31,9 @@ class ClockworkWigglerGenerator {
         private const val start: Int = 0;
         private const val end: Int = 501;
         private const val showNames: Boolean = false
+        private const val writeTracks: Boolean = false
+        private const val showPreview: Boolean = true
+        private const val saveImages: Boolean = true
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -50,7 +52,7 @@ class ClockworkWigglerGenerator {
                     }
                     val waviness: Double = i.toDouble() / multiplier.toDouble()
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-                    generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
+                    generator.doIt(waviness, createImageFileBaseName(count), createTrackFileName(waviness), plotterGui)
                 }
             } else { // we want JUST these specific values
                 val values = listOf(
@@ -69,11 +71,21 @@ class ClockworkWigglerGenerator {
                                    )
                 for (waviness in values) {
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-                    generator.doIt(waviness, "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr", plotterGui)
+                    generator.doIt(waviness, createImageFileBaseName(count), createTrackFileName(waviness), plotterGui)
                 }
             }
             // uncomment below to auto-shutdown, rather than waiting for the user to press a keystroke
             plotterGui.shutDown()
+        }
+
+        // image files need to have a numeric sequence so they can be converted to animations
+        private fun createImageFileBaseName(count: Int): String {
+            val expandedCount = count.toString().padStart(6, '0')
+            return "image_$expandedCount.png"
+        }
+
+        private fun createTrackFileName(waviness: Double): String {
+            return "clockworkSwirl6_${numberOfTicksPerTurn}_$waviness.thr"
         }
 
     }
@@ -89,7 +101,7 @@ class ClockworkWigglerGenerator {
      * Requirements - all r0 through rn MUST equal 1 for the table to start nicely.  Else, add an extra start point at rho=0 or 1 to appease the table gods.
      *
      */
-    fun doIt(waviness: Double, fileName: String, plotterGui: GuiController) {
+    fun doIt(waviness: Double, imageFileName: String, trackFileName: String, plotterGui: GuiController) {
         w0 = 2 * PI / numberOfTicksPerTurn
         w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
         println(
@@ -127,21 +139,26 @@ class ClockworkWigglerGenerator {
         points
             .reversed()
             .filter { ! it.thetaInRads().isNaN() }
-            .forEach {
-                output.add("${it.thetaInRads()}  ${it.rho.formatNicely(4)}")
-            }
+            .forEach { output.add("${it.thetaInRads()}  ${it.rho.formatNicely(4)}") }
 
-        // add the contents of this file, so we can remember how to get it back!
-        val programLines = FileUtils.readLines(File("src/main/kotlin/com/nurflugel/sisyphus/sunbursts/ClockworkWigglerGenerator.kt"), Charset.defaultCharset())
-        output.add("//")
-        output.add("// add this file so we can remember how to get it back!")
-        output.add("//")
-        programLines.forEach { output.add("// $it") }
-        FileUtils.forceMkdir(File(tracksDir))
         FileUtils.forceMkdir(File(imagesDir))
-        FileUtils.writeLines(File("$tracksDir/$fileName"), output)
 
-        plotterGui.showPreview(fileName, output, true, showNames) // show the preview
+        if (writeTracks) { // only write the tracks if desired - for large animations, it takes too much file space
+            // add the contents of this file, so we can remember how to get it back!
+            val programLines = FileUtils.readLines(File("src/main/kotlin/com/nurflugel/sisyphus/sunbursts/ClockworkWigglerGenerator.kt"), Charset.defaultCharset())
+            output.add("//")
+            output.add("// add this file so we can remember how to get it back!")
+            output.add("//")
+            programLines.forEach { output.add("// $it") }
+            FileUtils.forceMkdir(File(tracksDir))
+            FileUtils.writeLines(File("$tracksDir/$trackFileName"), output)
+        }
+        if (showPreview) {
+            plotterGui.showPreview(trackFileName, output, showNames) // show the preview && write the images to disk
+        }
+        if (saveImages) {
+            plotterGui.writeImage(imageFileName, output, showNames) //write the images to disk
+        }
         println("Done!")
     }
 
@@ -152,7 +169,6 @@ class ClockworkWigglerGenerator {
         // what the above does is strip away any theta greater than 2 PI.
 
         val thetaInDegrees = trimmedTheta.radsToDegrees()
-        //        println("Initial theta: ${thetaOneInRads.radsToDegrees()} trimmedThetaInDegrees = $thetaInDegrees")
         val angleSpread = 90
         val startAngle = (180 - angleSpread / 2.0)
         return thetaInDegrees > startAngle && thetaInDegrees <= 180

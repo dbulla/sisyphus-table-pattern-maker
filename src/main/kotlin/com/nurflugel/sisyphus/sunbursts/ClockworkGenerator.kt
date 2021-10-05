@@ -86,7 +86,7 @@ class ClockworkGenerator {
         FileUtils.writeLines(File("clockwork.thr"), output)
 
         val plotterGui = GuiController()
-        plotterGui.showPreview("clockwork.thr", output, false, false)
+        plotterGui.showPreview("clockwork.thr", output, false)
         println("Done!")
     }
 
