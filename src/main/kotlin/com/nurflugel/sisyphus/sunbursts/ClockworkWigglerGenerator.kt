@@ -96,7 +96,7 @@ class ClockworkWigglerGenerator {
         }
 
         // image files need to have a numeric sequence so they can be converted to animations
-        private fun createImageFileBaseName(count: Int): String {
+        public fun createImageFileBaseName(count: Int): String {
             val expandedCount = count.toString().padStart(6, '0')
             return "image_$expandedCount.png"
         }

@@ -37,43 +37,7 @@ class ImageWriterController {
         val fonts = ge.availableFontFamilyNames
         val bufferedImage = BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB)
         graphics2D = localGraphicsEnvironment.createGraphics(bufferedImage)
-        //        val gd = localGraphicsEnvironment.defaultScreenDevice
-        //        val width = graphics2D.
-        //        val height = graphics2D.displayMode.height
-        //        println("       width from device = $width")
-        //        println("       height from device = $height")
-        //        frame.title = "Click any key to close"
-        //        frame.isUndecorated = true
-        //        frame.rootPane.border = BorderFactory.createEmptyBorder();
-        //
-        //        frame.contentPane = guiPanel
-        //        frame.defaultCloseOperation = EXIT_ON_CLOSE
-        //        frame.pack()
-        //        frame.preferredSize = Dimension(WIDTH, HEIGHT) // todo need to add 45
-        //        frame.minimumSize = Dimension(WIDTH, HEIGHT) // todo need to add 45
-        //        frame.extendedState = JFrame.MAXIMIZED_BOTH;
-
-        //        println("       width from frame = ${frame.size.width}")
-        //        println("       height from frame = ${frame.size.height}")
-        //
-        //        if (SHUT_DOWN_WITH_KEY_PRESS) {
-        //            frame.addKeyListener(object : KeyAdapter() {
-        //                override fun keyPressed(e: KeyEvent?) {
-        //                    shutDown()
-        //                }
-        //            })
-        //        }
     }
-
-    //    internal fun shutDown() {
-    //        guiPanel.parent.isVisible = false
-    //        frame.isVisible = false
-    //        frame.dispose()
-    //        //        System.exit(0) // this will kill the app completely
-    //    }
-
-    //    private fun getGraphicsContext() = guiPanel
-
 
     //    // todo split this up into showPreview and writeImage - clearer, easier to turn on/off what's desired
     fun writeImage(imageFileName: String, lines: MutableList<String>, showNames: Boolean) {
@@ -98,12 +62,8 @@ class ImageWriterController {
         graphics2D.font = Font("Helvetica", Font.PLAIN, 13)
 
         var previousPoint: Pair<Double, Double>? = null
-
         val graphicsPairs = createGraphicsCoordinates(lines, scaleFactorY, offsetX, offsetY)
-
-        //                val bImg = BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB)
         val cg = bufferedImage.createGraphics()
-        //                guiPanel.paintAll(cg)
 
         for (currentPoint in graphicsPairs) {
             drawImageToSave(previousPoint, currentPoint, cg, imageFileName, showNames)
