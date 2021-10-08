@@ -107,10 +107,13 @@ class GuiUtils {
 
         private fun convertLineToPair(line: String): Pair<Double, Double>? {
             val tokens = line.split(" ", "\t")
-            val theta = tokens[0].toDoubleOrNull()
-            val rho = tokens.last().toDoubleOrNull()
-            if (rho != null && theta != null) return Pair(theta, rho)
-            return null
+            //            val theta = tokens[0].toDoubleOrNull()
+            //            val rho = tokens.last().toDoubleOrNull()
+            val theta = tokens[0].toDouble()
+            val rho = tokens.last().toDouble()
+            //            if (rho != null && theta != null) return Pair(theta, rho)
+            return Pair(theta, rho)
+            //            return null
         }
 
         /** Is this a usable point?  */

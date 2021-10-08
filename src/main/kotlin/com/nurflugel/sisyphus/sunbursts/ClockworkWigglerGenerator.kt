@@ -42,8 +42,6 @@ class ClockworkWigglerGenerator {
             val generator = ClockworkWigglerGenerator()
             val plotterGui: GuiPreviewer? = if (showPreview) GuiPreviewer() else null
             val imageWriterController: ImageWriterController? = if (saveImages) ImageWriterController() else null
-            //            val headlessValue = System.getProperty("java.awt.headless")
-            //            System.setProperty("java.awt.headless", null)
             if (showPreview && plotterGui != null) {
                 plotterGui.initialize()
             } else {
@@ -60,11 +58,17 @@ class ClockworkWigglerGenerator {
                     val duration = Duration.between(startTime, now).toMillis()
                     println("count = ${count ++} ")
                     if (count > 0 && duration > 0) {
-                        println("speed = ${count / (duration.toFloat() / 1000)} images/sec")
+                        println("average speed = ${count / (duration.toFloat() / 1000)} images/sec")
                     }
                     val waviness: Double = i.toDouble() / multiplier.toDouble()
                     w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
                     generator.doIt(waviness, createImageFileBaseName(count), createTrackFileName(waviness), plotterGui, imageWriterController)
+                    //  the average speed does not show the speed at the current moment.
+                    val end = Instant.now()
+                    val duration2 = Duration.between(now, end).toMillis()
+                    if (duration2 > 0) {
+                        println("current speed = ${1.0 / (duration.toFloat() / 1000)} images/sec")
+                    }
                 }
             } else { // we want JUST these specific values
                 val values = listOf(
