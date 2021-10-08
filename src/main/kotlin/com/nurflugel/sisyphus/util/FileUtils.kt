@@ -7,10 +7,10 @@ class FileUtils {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val oldDir = "./images4"
+            val oldDir = "../sisyphus-table-pattern-maker/images4"
             val newDir = "./imagesForVideoProcessing"
             val startNum = 0
-            val endNum = 999999
+            val endNum = 20
             val skipNum = 1
             val shouldCleanExistingFiles = true
             copyFilesToNewDir(oldDir, newDir, startNum, endNum, skipNum, shouldCleanExistingFiles)
@@ -18,9 +18,8 @@ class FileUtils {
 
         /**
          * Copies files from the old dir to the new dir.  Options are:
-         * @param oldDir Source dir fior images
-         * @param newDir target dir fior images
-         * @param filePrefix How the files begins, minus the numbers, like "image_"
+         * @param oldDir Source dir for images
+         * @param newDir target dir for images
          * @param startNum starting index to copy, will be left-padded with 0's - 5 would start at image_000005.png
          * @param endNum Final index to copy.
          * @param skipNum Increment to copy - will result in 1/skipNum files being copied.  NOTE: this will also result in the files being renamed sequentially so the MPEG creator can properly process them
@@ -42,12 +41,6 @@ class FileUtils {
                 }
                 File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
             }
-            //                    intStream.between(startNum, endNum).forEach{
-            //                        val sourceFileName= filePrefix+ leftPad(it)+".png"
-            //                        val number = 
-            //                        val targetFileName= filePrefix + leftPad()
-            //                    }
-            //        
         }
     }
 }
