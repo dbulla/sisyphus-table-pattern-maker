@@ -9,7 +9,7 @@ class FileUtils {
         fun main(args: Array<String>) {
             val oldDir = "./images4"
             val newDir = "./imagesForVideoProcessing"
-            val startNum = 0
+            val startNum = 1
             val endNum = 999999
             val skipNum = 1
             val shouldCleanExistingFiles = true
@@ -36,18 +36,13 @@ class FileUtils {
             targetDir.mkdirs()
             for (index in startNum..endNum step skipNum) {
                 val sourceFileName = createImageFileBaseName(index)
-                val targetFileName = when {
-                    skipNum != 1 -> sourceFileName
-                    else         -> createImageFileBaseName(count ++)
+                val targetFileName = when (skipNum) {
+                    1    -> sourceFileName
+                    else -> createImageFileBaseName(count ++)
                 }
+                println("targetFileName = ${targetFileName}")
                 File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
             }
-            //                    intStream.between(startNum, endNum).forEach{
-            //                        val sourceFileName= filePrefix+ leftPad(it)+".png"
-            //                        val number = 
-            //                        val targetFileName= filePrefix + leftPad()
-            //                    }
-            //        
         }
     }
 }
