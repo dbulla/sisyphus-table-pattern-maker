@@ -9,7 +9,7 @@ class FileUtils {
         fun main(args: Array<String>) {
             val oldDir = "../sisyphus-table-pattern-maker/images4"
             val newDir = "./imagesForVideoProcessing"
-            val startNum = 0
+            val startNum = 1
             val endNum = 20
             val skipNum = 1
             val shouldCleanExistingFiles = true
@@ -28,17 +28,19 @@ class FileUtils {
         @Suppress("SameParameterValue")
         private fun copyFilesToNewDir(oldDir: String, newDir: String, startNum: Int, endNum: Int, skipNum: Int = 1, shouldCleanExistingFiles: Boolean = true) {
             val targetDir = File(newDir)
-            if (shouldCleanExistingFiles && targetDir.exists()) {
-                targetDir.delete()
+            val alreadyExists = targetDir.exists()
+            if (shouldCleanExistingFiles && alreadyExists) {
+                targetDir.deleteRecursively()
             }
             var count = 0;
             targetDir.mkdirs()
             for (index in startNum..endNum step skipNum) {
                 val sourceFileName = createImageFileBaseName(index)
-                val targetFileName = when {
-                    skipNum != 1 -> sourceFileName
-                    else         -> createImageFileBaseName(count ++)
+                val targetFileName = when (skipNum) {
+                    1    -> sourceFileName
+                    else -> createImageFileBaseName(count ++)
                 }
+                println("targetFileName = ${targetFileName}")
                 File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
             }
         }
