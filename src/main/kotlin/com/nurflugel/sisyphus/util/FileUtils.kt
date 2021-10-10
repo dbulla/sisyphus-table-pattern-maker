@@ -11,7 +11,7 @@ class FileUtils {
                               "./imagesForVideoProcessing/x3",
                               1,
                               999999,
-                              3,
+                              2,
                               true)
         }
 
@@ -25,7 +25,14 @@ class FileUtils {
          * @param shouldCleanExistingFiles If true, will delete any files in the target dir first.
          */
         @Suppress("SameParameterValue")
-        private fun copyFilesToNewDir(oldDir: String, newDir: String, startNum: Int, endNum: Int, skipNum: Int = 1, shouldCleanExistingFiles: Boolean = true) {
+        private fun copyFilesToNewDir(
+            oldDir: String,
+            newDir: String,
+            startNum: Int,
+            endNum: Int,
+            skipNum: Int = 1,
+            shouldCleanExistingFiles: Boolean = true,
+                                     ) {
             val targetDir = File(newDir)
             val alreadyExists = targetDir.exists()
             if (shouldCleanExistingFiles && alreadyExists) {
@@ -39,7 +46,7 @@ class FileUtils {
                     1    -> sourceFileName
                     else -> createImageFileBaseName(count ++)
                 }
-                println("sourceFileName = ${sourceFileName}, targetFileName = ${targetFileName}")
+                println("sourceFileName = $sourceFileName, targetFileName = $targetFileName")
                 File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
             }
         }
