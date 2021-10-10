@@ -34,7 +34,6 @@ class ImageWriterController {
     internal fun initialize() {
         val localGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
         val ge = localGraphicsEnvironment
-        val fonts = ge.availableFontFamilyNames
         val bufferedImage = BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB)
         graphics2D = localGraphicsEnvironment.createGraphics(bufferedImage)
     }

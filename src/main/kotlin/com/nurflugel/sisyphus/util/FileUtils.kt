@@ -7,13 +7,12 @@ class FileUtils {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val oldDir = "../sisyphus-table-pattern-maker/images4"
-            val newDir = "./imagesForVideoProcessing"
-            val startNum = 1
-            val endNum = 20
-            val skipNum = 1
-            val shouldCleanExistingFiles = true
-            copyFilesToNewDir(oldDir, newDir, startNum, endNum, skipNum, shouldCleanExistingFiles)
+            copyFilesToNewDir("../sisyphus-table-pattern-maker/images4",
+                              "./imagesForVideoProcessing/x3",
+                              1,
+                              999999,
+                              3,
+                              true)
         }
 
         /**
@@ -40,7 +39,7 @@ class FileUtils {
                     1    -> sourceFileName
                     else -> createImageFileBaseName(count ++)
                 }
-                println("targetFileName = ${targetFileName}")
+                println("sourceFileName = ${sourceFileName}, targetFileName = ${targetFileName}")
                 File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
             }
         }
