@@ -12,10 +12,11 @@ class FileUtils {
       val oldDir = "../sisyphus-table-pattern-maker/images4"
       val numFiles = File(oldDir).list() !!.size
       copyFilesToNewDir(oldDir,
-                        "./imagesForVideoProcessing/x2",
+                        "./imagesForVideoProcessing/haflLength2",
+          //                        1, // start at 1, not 0
+                        numFiles / 2, // start at 1, not 0
+                        9999999,
                         1,
-                        numFiles,
-                        2,
                         true)
     }
 
@@ -45,19 +46,24 @@ class FileUtils {
       }
       var count = 0;
       val start = Instant.now()
+      val totalImagesToProcess = (endNum - startNum) / skipNum
       targetDir.mkdirs()
       for (index in startNum..endNum step skipNum) {
         val sourceFileName = createImageFileBaseName(index)
         val targetFileName = when (skipNum) {
-          1    -> sourceFileName
-          else -> createImageFileBaseName(count ++)
+          99   -> sourceFileName
+          else -> createImageFileBaseName(count)
         }
-        val now = Instant.now()
-        val duration = Duration.between(start, now).toMillis() / 1000.0
-        val rate = count.toFloat() / duration
-        if (count % 10 == 0)
-          println("sourceFileName = $sourceFileName, targetFileName = $targetFileName, count = $count, rate = $rate images copied/sec")
+        if (count > 0 && count % 10 == 0) {
+          val now = Instant.now()
+          val timeSoFar: Long = Duration.between(start, now).toMillis() / 1000
+          val rate = count.toFloat() / timeSoFar
+          val timeRemaining: Long = totalImagesToProcess * timeSoFar / count // in seconds
+          val eta = now.plusSeconds(timeRemaining)
+          println("sourceFileName = $sourceFileName, targetFileName = $targetFileName, count = $count, rate = $rate images copied/sec, time remaining: ${timeRemaining / 60.0} minutes, ETA: $eta")
+        }
         File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
+        count ++
       }
     }
   }
