@@ -28,8 +28,9 @@ class ClockworkWigglerGenerator {
     const val deltaRhoPerTurn = .01
     const val thetaAdvance = 1.3
 
-    //    var count = 0;
-    var count = 631830;
+    var count = 0;
+
+    //    var count = 631830;
     var initialCount = count;
     private const val multiplier: Int = 320 * 4;
 
@@ -38,14 +39,15 @@ class ClockworkWigglerGenerator {
     private const val end: Int = 501;
 
     // normally we just use the value below, but in this case we want to start at 631830
-    //        private const val startIndex = start * multiplier-1
-    private const val startIndex = 631830 // last value output when machine rebooted
+    private const val startIndex = start * multiplier - 1
+
+    //    private const val startIndex = 631830 // last value output when machine rebooted
     private const val endIndex = end * multiplier
     private const val showNames: Boolean = false
     private const val writeTracks: Boolean = false
-    private const val showPreview: Boolean = false
+    private const val showPreview: Boolean = true
     private const val generateImages: Boolean = true // set to false if you just want a dry run
-    private const val saveImages: Boolean = true
+    private const val saveImages: Boolean = false
     private val imageToValueMapFile: File = File("imageToValueMapFile.txt") // map so you can find which image corresponds to which track
 
     @JvmStatic
@@ -64,11 +66,12 @@ class ClockworkWigglerGenerator {
       println("image to value map = $imageToValueMapFile")
 
       val generator = ClockworkWigglerGenerator()
-      val plotterGui: GuiPreviewer? = if (showPreview) GuiPreviewer() else null
+      val guiPreviewer: GuiPreviewer? = if (showPreview) GuiPreviewer() else null
       val imageWriterController: ImageWriterController? = if (saveImages) ImageWriterController() else null
-      if (showPreview && plotterGui != null) {
-        plotterGui.initialize()
-      } else {
+      if (showPreview && guiPreviewer != null) {
+        guiPreviewer.initialize()
+      }
+      else {
         System.setProperty("java.awt.headless", "true")
       }
       if (saveImages && imageWriterController != null) {
@@ -90,8 +93,12 @@ class ClockworkWigglerGenerator {
           val imageFileName = createImageFileBaseName(count)
           val trackFileName = createTrackFileName(waviness)
           imageToValueMapFile.appendText("$imageFileName\t$trackFileName")
-          generator.doIt(waviness, imageFileName, trackFileName, plotterGui, imageWriterController, generateImages)
-          //  the average speed does not show the speed at the current moment.
+          generator.doIt(waviness,
+                         imageFileName,
+                         trackFileName,
+                         guiPreviewer,
+                         imageWriterController,
+                         generateImages) //  the average speed does not show the speed at the current moment.
           val end = Instant.now()
           val duration2 = Duration.between(now, end).toMillis()
           if (duration2 > 0) {
@@ -115,12 +122,11 @@ class ClockworkWigglerGenerator {
                            )
         for (waviness in values) {
           w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-          generator.doIt(waviness, createImageFileBaseName(count ++), createTrackFileName(waviness), plotterGui, imageWriterController, generateImages)
+          generator.doIt(waviness, createImageFileBaseName(count ++), createTrackFileName(waviness), guiPreviewer, imageWriterController, generateImages)
         }
       }
       // uncomment below to auto-shutdown, rather than waiting for the user to press a keystroke
-      if (showPreview)
-        plotterGui !!.shutDown()
+      if (showPreview) guiPreviewer !!.shutDown()
     }
 
     // image files need to have a numeric sequence so they can be converted to animations
@@ -178,9 +184,9 @@ class ClockworkWigglerGenerator {
         val thetaOneInRads = w1 * t              // controls the height of the wiggle
         val deltaRho = r1 * cos(thetaOneInRads)
 
-        if (isValid(thetaOneInRads))
+        if (isValid(thetaOneInRads)) {
           points.add(pointFromRad(rho = rho + deltaRho, thetaInRads = thetaInRads))
-
+        }
         rho -= deltaRhoPerCount
         if (rho < 0.0) break
       }
@@ -188,12 +194,11 @@ class ClockworkWigglerGenerator {
       val output = mutableListOf<String>()
       output.add("816.6588952562589 0.0")
 
-      points
-          .reversed()
-          .filter { ! it.thetaInRads().isNaN() }
-          .forEach { output.add("${it.thetaInRads()}  ${it.rho.formatNicely(4)}") }
+      points.reversed().filter { ! it.thetaInRads().isNaN() }.forEach { output.add("${it.thetaInRads()}  ${it.rho.formatNicely(4)}") }
 
-      FileUtils.forceMkdir(File(imagesDir))
+      if (saveImages) {
+        FileUtils.forceMkdir(File(imagesDir))
+      }
 
       if (writeTracks) { // only write the tracks if desired - for large animations, it takes too much file space
         // add the contents of this file, so we can remember how to get it back!
