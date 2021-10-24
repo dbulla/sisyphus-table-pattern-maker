@@ -9,13 +9,13 @@ class FileUtils {
   companion object {
     @JvmStatic
     fun main(args: Array<String>) {
-            val oldDir = "./images4"
-            val newDir = "./imagesForVideoProcessing"
-            val startNum = 1 // start at 1, not 0
-            val endNum = 999999
-            val skipNum = 1
-            val shouldCleanExistingFiles = true
-            copyFilesToNewDir(oldDir, newDir, startNum, endNum, skipNum, shouldCleanExistingFiles)
+      val oldDir = "./images4"
+      val newDir = "./imagesForVideoProcessing"
+      val startNum = 1 // start at 1, not 0
+      val endNum = 20
+      val skipNum = 1
+      val shouldCleanExistingFiles = true
+      copyFilesToNewDir(oldDir, newDir, startNum, endNum, skipNum, shouldCleanExistingFiles)
     }
 
     /**
@@ -49,9 +49,9 @@ class FileUtils {
       for (index in startNum..endNum step skipNum) {
         val sourceFileName = createImageFileBaseName(index)
         val targetFileName = when (skipNum) {
-          1   -> sourceFileName
+          1    -> sourceFileName
           else -> createImageFileBaseName(count)
-        }
+        } // Only update status in the logs every 10th image
         if (count > 0 && count % 10 == 0) {
           val now = Instant.now()
           val timeSoFar: Long = Duration.between(start, now).toMillis() / 1000
@@ -60,7 +60,7 @@ class FileUtils {
           val eta = now.plusSeconds(timeRemaining)
           println("sourceFileName = $sourceFileName, targetFileName = $targetFileName, count = $count, rate = $rate images copied/sec, time remaining: ${timeRemaining / 60.0} minutes, ETA: $eta")
         }
-                println("targetFileName = ${targetFileName}")
+        println("targetFileName = $targetFileName")
         File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
         count ++
       }

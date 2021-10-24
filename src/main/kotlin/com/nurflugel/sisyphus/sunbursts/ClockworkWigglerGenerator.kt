@@ -28,13 +28,13 @@ class ClockworkWigglerGenerator {
     const val deltaRhoPerTurn = .01
     const val thetaAdvance = 1.3
 
+    // Setting to something other than 0 will allow the app to "resume" the count if it's been interrupted.  
+    // Todo - output status in a file so app can automatically restart if interrupted.
     var count = 0;
 
-    //    var count = 631830;
     var initialCount = count;
     private const val multiplier: Int = 320 * 4;
 
-    //        private const val start: Int = 0;
     private const val start: Int = 0;
     private const val end: Int = 501;
 
@@ -43,11 +43,12 @@ class ClockworkWigglerGenerator {
 
     //    private const val startIndex = 631830 // last value output when machine rebooted
     private const val endIndex = end * multiplier
-    private const val showNames: Boolean = false
-    private const val writeTracks: Boolean = false
-    private const val showPreview: Boolean = true
-    private const val generateImages: Boolean = true // set to false if you just want a dry run
-    private const val saveImages: Boolean = false
+    private const val showNames: Boolean = false  // if set to true the value will be rendered in the image, but this slows down rendering a TON
+    private const val writeTracks: Boolean = true // if true, will save tracks to disk
+    private const val showPreview: Boolean = true // if true, will show images in the UI
+    private const val generateImages: Boolean = true // set to false if you just want a dry run w/o saving images
+    private const val saveImages: Boolean = true
+    private const val useSelectedValues: Boolean = false // use a list of values, 
     private val imageToValueMapFile: File = File("imageToValueMapFile.txt") // map so you can find which image corresponds to which track
 
     @JvmStatic
@@ -78,7 +79,18 @@ class ClockworkWigglerGenerator {
         imageWriterController.initialize()
       }
 
-      if (true) { // cheesy way of turning off the iterative generator and work from a given list instead, w/o commenting out the code
+      if (useSelectedValues) { // we want JUST these specific values
+        val values = listOf(
+            4.1,
+            4.3375,
+            26.85,
+                           )
+        for (waviness in values) {
+          w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
+          generator.doIt(waviness, createImageFileBaseName(count ++), createTrackFileName(waviness), guiPreviewer, imageWriterController, generateImages)
+        }
+      }
+      else { // Use the iterative generator to select values
         val startTime = Instant.now()
 
         for (i in startIndex..endIndex) {
@@ -105,32 +117,13 @@ class ClockworkWigglerGenerator {
             println("current speed = ${1.0 / (duration.toFloat() / 1000)} images/sec")
           }
         }
-      } else { // we want JUST these specific values
-        val values = listOf(
-            //                        0.00000001,
-            //                        0.8625,
-            //                        1.2875,
-            //                        1.325,
-            //                        1.725,
-            //                        1.95,
-            //                        2.275,
-            //                        2.4,
-            //                        2.5875,
-            4.1,
-            4.3375,
-            26.85,
-                           )
-        for (waviness in values) {
-          w1 = w0 * waviness // waviness of the tip of the secondhand - 33 revs per rev
-          generator.doIt(waviness, createImageFileBaseName(count ++), createTrackFileName(waviness), guiPreviewer, imageWriterController, generateImages)
-        }
       }
       // uncomment below to auto-shutdown, rather than waiting for the user to press a keystroke
       if (showPreview) guiPreviewer !!.shutDown()
     }
 
     // image files need to have a numeric sequence so they can be converted to animations
-    public fun createImageFileBaseName(count: Int): String {
+    fun createImageFileBaseName(count: Int): String {
       val expandedCount = count.toString().padStart(6, '0')
       return "image_$expandedCount.png"
     }
