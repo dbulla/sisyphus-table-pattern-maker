@@ -1,6 +1,6 @@
 package com.nurflugel.sisyphus.sunbursts
 
-import com.nurflugel.sisyphus.gui.GuiController
+import com.nurflugel.sisyphus.gui.GuiPreviewer
 import com.nurflugel.sisyphus.sunbursts.Direction.INWARDS
 import com.nurflugel.sisyphus.sunbursts.Direction.OUTWARDS
 import org.apache.commons.io.FileUtils
@@ -118,11 +118,9 @@ class SunburstGenerator {
 
         FileUtils.writeLines(File("inwards_sunburst.thr"), output)
 
-        val plotterGui = GuiController()
+        val plotterGui = GuiPreviewer()
         plotterGui.showPreview("inwards_sunburst.thr", output, false)
         println("Done!")
 
-
     }
-
 }

@@ -2,7 +2,7 @@ package com.nurflugel.sisyphus.sunbursts
 
 import com.nurflugel.sisyphus.domain.Point
 import com.nurflugel.sisyphus.domain.Point.Companion.pointFromRad
-import com.nurflugel.sisyphus.gui.GuiController
+import com.nurflugel.sisyphus.gui.GuiPreviewer
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.Math.PI
@@ -85,7 +85,7 @@ class ClockworkGenerator {
 
         FileUtils.writeLines(File("clockwork.thr"), output)
 
-        val plotterGui = GuiController()
+        val plotterGui = GuiPreviewer()
         plotterGui.showPreview("clockwork.thr", output, false)
         println("Done!")
     }
