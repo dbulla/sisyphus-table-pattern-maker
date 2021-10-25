@@ -4,14 +4,15 @@
 
 Here are some videos of what this can do
 
-- My latest batch - https://youtu.be/aETkSvVGNjo
-  - the previews were stitched in to an 8+ hour long video!  Unfortuately, that exceeded the 125 GB limit for YouTube,
+- My latest batch - [https://youtu.be/aETkSvVGNjo](https://youtu.be/aETkSvVGNjo)
+  - the previews were stitched in to an 8+ hour long video!  Unfortunately, that exceeded the 125 GB limit for YouTube,
     so I had to split it into 2 "smaller" 115 GB chunks
-  - Pt 1: https://youtu.be/AToWMzoTWOk
-  - Pt 2: https://youtu.be/QgAuZkCiKb4
-  - A 2x speed complete video, but it's faster than I like, so that's why I split it - https://youtu.be/cMcXebgzvUk
+  - Pt 1:[ https://youtu.be/AToWMzoTWOk](https://youtu.be/aETkSvVGNjo)
+  - Pt 2: [https://youtu.be/QgAuZkCiKb4](https://youtu.be/aETkSvVGNjo)
+  - A 2x speed complete video, but it's faster than I like, so that's why I split it
+    - [https://youtu.be/cMcXebgzvUk](https://youtu.be/aETkSvVGNjo)
 - An earlier video I did, shows a week's worth of my work, plus a bunch of other folks stuff
-  - https://youtu.be/oxXi2cRQTB0
+  - [https://youtu.be/oxXi2cRQTB0](https://youtu.be/aETkSvVGNjo)
 
 ### ffmpg
 
