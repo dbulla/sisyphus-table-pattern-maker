@@ -2,8 +2,16 @@
 
 ### What is it?
 
-Sample animation
-- [10,000 image animation - direct link](http://www.nurflugel.com/Home/temp/video/sisyphus_plots_1.mp4)
+Here are some videos of what this can do
+
+- My latest batch - https://youtu.be/aETkSvVGNjo
+  - the previews were stitched in to an 8+ hour long video!  Unfortuately, that exceeded the 125 GB limit for YouTube,
+    so I had to split it into 2 "smaller" 115 GB chunks
+  - Pt 1: https://youtu.be/AToWMzoTWOk
+  - Pt 2: https://youtu.be/QgAuZkCiKb4
+  - A 2x speed complete video, but it's faster than I like, so that's why I split it - https://youtu.be/cMcXebgzvUk
+- An earlier video I did, shows a week's worth of my work, plus a bunch of other folks stuff
+  - https://youtu.be/oxXi2cRQTB0
 
 ### ffmpg
 
@@ -37,7 +45,8 @@ ffmpeg -i my_movie.mp4 -vf scale=600:600 my_movie_600x600.mp4
 
 ### Video Quality & Sharing
 
-The `x264` codec makes everything look nice - but because of the graphics nature, the files get large - gigabytes.  
+YouTube is very particular about the size of your animations, 2560 x 1440 is "HD". Anything OTHER than what they like
+will result in your video being resampled, and it'll look like crap.
 
-I've not found any way to share these on Flickr or YouTube that doesn't result in them resampling them and making them
-look like crap - but I have my own web domain, so uploading them there and linking works just fine.
+Also worth noting, is that it took YouTube a _week_ to process the HD version of these - regular videos get processed in
+minutes, so the crisp computer images need more processing and don't get processed promptly.
