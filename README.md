@@ -1,6 +1,6 @@
 # sisyphus-table-pattern-maker
 
-Check out the Github Pages for this repo - https://dbulla.github.io/sisyphus-table-pattern-maker/
+Check out the Github Pages for this repo - [https://dbulla.github.io/sisyphus-table-pattern-maker/](https://dbulla.github.io/sisyphus-table-pattern-maker/)
 
 ## What does it do?
 
