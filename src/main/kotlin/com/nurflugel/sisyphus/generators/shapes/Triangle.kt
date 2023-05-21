@@ -1,8 +1,8 @@
-package com.nurflugel.sisyphus.shapes
+package com.nurflugel.sisyphus.generators.shapes
 
-import com.nurflugel.sisyphus.domain.LinearSegment
-import com.nurflugel.sisyphus.domain.Point
-import com.nurflugel.sisyphus.domain.Shape
+import com.nurflugel.sisyphus.generators.domain.LinearSegment
+import com.nurflugel.sisyphus.generators.domain.Point
+import com.nurflugel.sisyphus.generators.domain.Shape
 
 
 /**  This class makes a shape that spans the table and looks like this (the dot is the table center):
