@@ -1,0 +1,10 @@
+# This track does a "clean" - always ending at rho = 0
+
+# theta	rho
+0	0
+# do 20 revs out
+125.6637061	1
+# one full ring at rho=1
+131.9468915	1
+# do 80 revs in
+634.601716	0

@@ -1,0 +1,8 @@
+# This track does a "clean" - always ending at rho = 1
+
+theta	rho
+0	1
+# do 20 revs in
+125.6637061	0
+# do 70 revs out
+565.4866776	1

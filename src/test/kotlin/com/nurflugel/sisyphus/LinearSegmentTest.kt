@@ -1,8 +1,8 @@
 package com.nurflugel.sisyphus
 
-import com.nurflugel.sisyphus.domain.LinearSegment
-import com.nurflugel.sisyphus.domain.Point
-import com.nurflugel.sisyphus.domain.Point.Companion.RHO_PRACTICALLY_ZERO
+import com.nurflugel.sisyphus.generators.domain.LinearSegment
+import com.nurflugel.sisyphus.generators.domain.Point
+import com.nurflugel.sisyphus.generators.domain.Point.Companion.RHO_PRACTICALLY_ZERO
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
@@ -12,7 +12,8 @@ const val expected1 = 0.8660254037844387
 class LinearSegmentTest : StringSpec(
     {
         "spitting into sub segments should work - horizontal line" {
-            val segment = LinearSegment(Point.pointFromRad(0.0, 0.0),
+            val segment = LinearSegment(
+                Point.pointFromRad(0.0, 0.0),
                                         Point.pointFromRad(1.0, 0.0), 2
                                        )
             val subSegments: List<LinearSegment> = segment.generateSubSegments()
@@ -24,7 +25,8 @@ class LinearSegmentTest : StringSpec(
 
 
         "spitting into sub segments should work - offset horizontal line" {
-            val segment = LinearSegment(Point.pointFromXY(0.0, 0.25),
+            val segment = LinearSegment(
+                Point.pointFromXY(0.0, 0.25),
                                         Point.pointFromXY(0.5, 0.25), 2
                                        )
             val subSegments: List<LinearSegment> = segment.generateSubSegments()
@@ -39,7 +41,8 @@ class LinearSegmentTest : StringSpec(
         }
 
         "spitting into sub segments should work - SLOPED line" {
-            val segment = LinearSegment(Point.pointFromDeg(1.0, 90.0),
+            val segment = LinearSegment(
+                Point.pointFromDeg(1.0, 90.0),
                                         Point.pointFromRad(1.0, 0.0), 2
                                        )
             val subSegments: List<LinearSegment> = segment.generateSubSegments()
@@ -57,7 +60,8 @@ class LinearSegmentTest : StringSpec(
         }
 
         "spitting into sub segments should work - Vertical line w/2 subseg" {
-            val segment = LinearSegment(Point.pointFromDeg(1.0, 120.0),
+            val segment = LinearSegment(
+                Point.pointFromDeg(1.0, 120.0),
                                         Point.pointFromDeg(1.0, 240.0), 2
                                        )
             val subSegments: List<LinearSegment> = segment.generateSubSegments()
@@ -77,7 +81,8 @@ class LinearSegmentTest : StringSpec(
         }
 
         "spitting into sub segments should work - Vertical line w/3 subseg" {
-            val segment = LinearSegment(Point.pointFromDeg(1.0, 120.0),
+            val segment = LinearSegment(
+                Point.pointFromDeg(1.0, 120.0),
                                         Point.pointFromDeg(1.0, 240.0), 3
                                        )
             val subSegments: List<LinearSegment> = segment.generateSubSegments()

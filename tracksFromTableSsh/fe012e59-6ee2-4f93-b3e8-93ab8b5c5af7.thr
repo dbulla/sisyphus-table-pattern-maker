@@ -1,0 +1,7 @@
+# Created by Douglas Bullard
+# 
+#   This pattern starts at 1, goes to 0 (50 revs), and back out to 1 (100 revs)
+
+0 1
+314.159265359 0
+942.4777960769 1

@@ -18,7 +18,7 @@ class InterviewTest {
             try {
                 InterviewTest().doIt()
             } catch (e: Exception) {
-                println("e = ${e}")
+                println("e = $e")
             }
             val end = Instant.now()
 
