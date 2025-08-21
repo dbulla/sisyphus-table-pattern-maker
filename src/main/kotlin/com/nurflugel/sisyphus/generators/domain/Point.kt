@@ -98,7 +98,7 @@ private constructor(var x: Double,
 
         /** The minimum threshold to be considered zero. */
         const val THETA_PRACTICALLY_ZERO = .0001
-        const val RHO_PRACTICALLY_ZERO = .001
+        const val RHO_PRACTICALLY_ZERO = .0001
         const val PRACTICALLY_ONE = 1.0 - RHO_PRACTICALLY_ZERO
     }
 }

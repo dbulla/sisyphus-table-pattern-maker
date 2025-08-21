@@ -42,11 +42,10 @@ class FileUtils {
       if (shouldCleanExistingFiles && alreadyExists) {
         targetDir.deleteRecursively()
       }
-      var count = 0;
       val start = Instant.now()
       val totalImagesToProcess = (endNum - startNum) / skipNum
       targetDir.mkdirs()
-      for (index in startNum..endNum step skipNum) {
+      for ((count, index) in (startNum..endNum step skipNum).withIndex()) {
         val sourceFileName = createImageFileBaseName(index)
         val targetFileName = when (skipNum) {
           1    -> sourceFileName
@@ -62,7 +61,6 @@ class FileUtils {
         }
         println("targetFileName = $targetFileName")
         File(oldDir, sourceFileName).copyTo(File(targetDir, targetFileName))
-        count ++
       }
     }
   }

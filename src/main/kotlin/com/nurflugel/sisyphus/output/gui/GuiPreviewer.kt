@@ -38,7 +38,7 @@ class GuiPreviewer {
     @JvmStatic
     fun main(args: Array<String>) {
       val filePath = if (args.isNotEmpty() && args.first().startsWith("thrFile=")) args.last().substringAfter("thrFile=")
-      else "/Users/douglas_bullard/Downloads/Sisyphus Tracks/crsolomon/1551055361-sun-moon.thr"
+      else "/Users/douglasbullard/Sisyphus/Sisyphus Tracks/crsolomon/1551055361-sun-moon.thr"
       println("filePath = $filePath")
       val lines = FileUtils.readLines(File(filePath), "UTF-8")
       val plotterGui = GuiPreviewer()
@@ -90,7 +90,8 @@ class GuiPreviewer {
     frame.isVisible = true
     frame.title = "$trackFileName     Click any key to close" // todo reset the values for scales based on the present GUI size
     val graphicsContext = getGraphicsContext()
-    val graphics2D = graphicsContext.graphics as Graphics2D
+    val graphics = graphicsContext.graphics
+    val graphics2D = graphics as Graphics2D
     graphics2D.clearRect(0, 0, graphicsContext.width, graphicsContext.height)
     val scaleFactorY = graphicsContext.size.height / 2 // 2 * rho=1 gives two 
     val scaleFactorX = graphicsContext.size.width / 2 // 2 * rho=1 gives two 

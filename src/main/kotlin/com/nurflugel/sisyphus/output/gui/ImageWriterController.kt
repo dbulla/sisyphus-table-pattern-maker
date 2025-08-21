@@ -4,6 +4,7 @@ import com.nurflugel.sisyphus.output.gui.GuiUtils.Companion.aliasedRenderingHint
 import com.nurflugel.sisyphus.output.gui.GuiUtils.Companion.createGraphicsCoordinates
 import com.nurflugel.sisyphus.output.gui.GuiUtils.Companion.imagesDir
 import com.nurflugel.sisyphus.output.gui.GuiUtils.Companion.isUsable
+import com.nurflugel.sisyphus.output.gui.GuiUtils.Companion.nonAliasedRenderingHints
 import org.apache.commons.io.FileUtils
 import java.awt.*
 import java.awt.event.KeyAdapter
@@ -27,13 +28,16 @@ class ImageWriterController {
     companion object {
         private const val WIDTH = 2560
         private const val HEIGHT = 1440
+//        private const val WIDTH = 3480
+//        private const val HEIGHT = 2160
+//        private const val WIDTH = 1280
+//        private const val HEIGHT = 1024
     }
 
     private lateinit var graphics2D: Graphics2D
 
     internal fun initialize() {
         val localGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
-        val ge = localGraphicsEnvironment
         val bufferedImage = BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB)
         graphics2D = localGraphicsEnvironment.createGraphics(bufferedImage)
     }
@@ -41,8 +45,6 @@ class ImageWriterController {
     //    // todo split this up into showPreview and writeImage - clearer, easier to turn on/off what's desired
     fun writeImage(imageFileName: String, lines: MutableList<String>, showNames: Boolean) {
         val localGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
-        val ge = localGraphicsEnvironment
-        val fonts = ge.availableFontFamilyNames
         val bufferedImage = BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB)
         graphics2D = localGraphicsEnvironment.createGraphics(bufferedImage)
         // initial point of null
@@ -58,6 +60,7 @@ class ImageWriterController {
         val offsetY = scaleFactorY * 1 // todo x and y
 
         graphics2D.setRenderingHints(aliasedRenderingHints)
+//        graphics2D.setRenderingHints(nonAliasedRenderingHints)
         graphics2D.font = Font("Helvetica", Font.PLAIN, 13)
 
         var previousPoint: Pair<Double, Double>? = null
@@ -68,10 +71,11 @@ class ImageWriterController {
             drawImageToSave(previousPoint, currentPoint, cg, imageFileName, showNames)
             previousPoint = currentPoint
         }
-        val imageFile = File("./$imagesDir/${imageFileName}")
-        if (ImageIO.write(bufferedImage, "png", imageFile)) {
-            println("$imageFile -- saved")
-        }
+        val imageFile = File(imageFileName)
+        ImageIO.write(bufferedImage, "png", imageFile)
+//        if (ImageIO.write(bufferedImage, "png", imageFile)) {
+//            println("$imageFile -- saved")
+//        }
     }
 
     private fun drawImageToSave(

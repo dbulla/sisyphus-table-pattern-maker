@@ -11,6 +11,7 @@ class GuiUtils {
             val hints = RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
             hints[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY;
             hints[RenderingHints.KEY_ANTIALIASING] = RenderingHints.VALUE_ANTIALIAS_OFF;
+//            hints[RenderingHints.KEY_ANTIALIASING] = RenderingHints.VALUE_ANTIALIAS_ON;
             hints;
         }
         val nonAliasedRenderingHints = run {
@@ -105,10 +106,8 @@ class GuiUtils {
             return Pair(xy.first * scaleFactor + offsetX, xy.second * scaleFactor + offsetY)
         }
 
-        private fun convertLineToPair(line: String): Pair<Double, Double>? {
+        private fun convertLineToPair(line: String): Pair<Double, Double> {
             val tokens = line.split(" ", "\t")
-            //            val theta = tokens[0].toDoubleOrNull()
-            //            val rho = tokens.last().toDoubleOrNull()
             val theta = tokens[0].toDouble()
             val rho = tokens.last().toDouble()
             //            if (rho != null && theta != null) return Pair(theta, rho)

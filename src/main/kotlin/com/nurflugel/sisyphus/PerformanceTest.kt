@@ -9,7 +9,7 @@ class PerformanceTest {
         @JvmStatic
         fun main(args: Array<String>) {
             val start = Instant.now()
-            val n = 100000000
+            val n = 1000000000
 //            val n = 1000
             val primeNumbers = sieveOfEratosthenes(n)
             val end = Instant.now()

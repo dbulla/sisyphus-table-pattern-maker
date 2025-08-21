@@ -16,12 +16,12 @@ class ClockworkGenerator {
 
     companion object {
 
-        const val numberOfCounts = 4000
-        const val numberOfRhos = 1
-        const val r0 = 0.85
-        const val r1 = 0.15
-        const val w0 = 2 * PI / numberOfCounts
-        const val w1 = w0 * - 20
+        const val NUMBER_OF_COUNTS = 4000
+        const val NUMBER_OF_RHOS = 1
+        const val R0 = 0.85
+        const val R1 = 0.15
+        const val W0 = 2 * PI / NUMBER_OF_COUNTS
+        const val W1 = W0 * - 20
 
 
         @JvmStatic
@@ -43,30 +43,28 @@ class ClockworkGenerator {
     fun doIt() {
 
         println("""
-|   numberOfCounts = $numberOfCounts
-|   numberOfRhos = $numberOfRhos
-|   r0 = $r0
-|   r1 = $r1
-|   w0 = $w0
-|   w1 = $w1""".trimMargin()
+|   numberOfCounts = $NUMBER_OF_COUNTS
+|   numberOfRhos = $NUMBER_OF_RHOS
+|   r0 = $R0
+|   r1 = $R1
+|   w0 = $W0
+|   w1 = $W1""".trimMargin()
                )
 
-        val points = (numberOfRhos downTo 1)
+        val points = (NUMBER_OF_RHOS downTo 1)
             .map {
                 println("rho number $it")
                 it
             }
-            .map { r0 * it / numberOfRhos.toDouble() }
+            .map { R0 * it / NUMBER_OF_RHOS.toDouble() }
             .map { rho ->
                 println("   rho = $rho")
-                (0..(numberOfCounts))
+                (0..(NUMBER_OF_COUNTS))
                     .map { t ->
-                        val thetaInRads = w0 * t
-                        println(
-                            "t = $t   Initial point: rho = $rho, thetaInRads = $thetaInRads, thetaInDegrees = ${thetaInRads * 180.0 / PI}"
-                               )
+                        val thetaInRads = W0 * t
+//                        println("t = $t   Initial point: rho = $rho, thetaInRads = $thetaInRads, thetaInDegrees = ${thetaInRads * 180.0 / PI}")
                         val point0 = pointFromRad(rho = rho, thetaInRads = thetaInRads)
-                        calculateClockworkPoint(point0, r1, w1 * t)
+                        calculateClockworkPoint(point0, R1, W1 * t)
                     }
             }.flatten()
 

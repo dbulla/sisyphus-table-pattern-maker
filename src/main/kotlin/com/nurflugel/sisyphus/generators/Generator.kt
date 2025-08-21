@@ -4,8 +4,8 @@ import com.nurflugel.sisyphus.generators.domain.Point
 import com.nurflugel.sisyphus.generators.domain.Point.Companion.isRhoPracticallyOne
 import com.nurflugel.sisyphus.generators.domain.Point.Companion.isRhoPracticallyZero
 import com.nurflugel.sisyphus.generators.domain.Shape
+import com.nurflugel.sisyphus.generators.shapes.*
 import com.nurflugel.sisyphus.output.gui.GuiPreviewer
-import com.nurflugel.sisyphus.generators.shapes.Rectangle
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.time.LocalDateTime
@@ -25,8 +25,14 @@ class Generator {
         // take the basic shape - make X copies for 1 revolution.  With each full resolution, reduce the rho by a %
         //            val template = SharpSawtooth()
         //            val template = TriangleSawtooth()
-        //        val template = Triangle()
-        val template = Rectangle()
+//        val template = Triangle()
+//        val template = NarrowTriangle()
+        val template = Diamond()
+//        val template = Hexagon()
+//        val template = Pentagon()
+//        val template = Septagon()
+//        val template = Nonagon()
+        //        val template = Rectangle()
         //        val template = Square()
 
         val numberOfCopiesPerRev = template.numberOfCopiesPerRev // how many copies around the circle?
@@ -45,31 +51,54 @@ class Generator {
         //copy the base shape into a new shape, offset by delta theta.
         //rho varies from previous shape by rhoRemainingPerRev/nu
 
-
+        // todo - make this able to have
         val adjustedPoints = (0..numberOfCopies)
-                .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) } // generate the offset shape
-                .flatMap { it.segments } // flatten the shapes into their segments
-                .flatMap { it.generateSubSegments() } // transform the list of shapes into the list of segments
-                .flatMap { it.points(false) } // convert the segments into points
-                .map { adjustRho(it) } // round rho up or down if it's really close to 0 or 1
+            .map { template.withOffset(deltaRhoPerCopy, deltaThetaPerCopy, it) } // generate the offset shape
+            .flatMap { it.segments } // flatten the shapes into their segments
+            .flatMap { it.generateSubSegments() } // transform the list of shapes into the list of segments
+            .flatMap { it.points(false) } // convert the segments into points
+            .map { adjustRho(it) } // round rho up or down if it's really close to 0 or 1
+        /////////////////////
+        val numberOfSwitches = 4
+        val offsetShapes = (0..numberOfCopies).map { copyNumber ->
+            val modDeltaTheta = deltaThetaPerCopy * computeSwitchFactor(copyNumber, numberOfCopies, numberOfSwitches)
+            template.withOffset(deltaRhoPerCopy, modDeltaTheta, copyNumber)
+        }
 
-        val points = trimPoints(adjustedPoints)
-        val dedupedPoints = eliminateSuccessiveDupes(points)
+        val flattenedShapes = offsetShapes.flatMap { it.segments }
+        val generatedSubSegments = flattenedShapes.flatMap { it.generateSubSegments() }
+        val convertedSegmentsIntoPoints = generatedSubSegments.flatMap { it.points(false) }
+        val adjustedPoints2 = convertedSegmentsIntoPoints.map { adjustRho(it) }
+
+        /////////////
+//        val trimmedPoints = trimPoints(adjustedPoints)
+        val trimmedPoints = trimPoints(adjustedPoints2)
+        val dedupedPoints = eliminateSuccessiveDupes(trimmedPoints)
+//        val dedupedPoints = eliminateSuccessiveDupes(adjustedPoints2)
 
         val finalPoints: List<Point> = ensureLinesEndWithZeroOrOne(dedupedPoints)
         val lines = finalPoints
-            .map { "${it.thetaInRads()} \t${it.rho}" }
+            .map { "${Math.abs(it.thetaInRads())} \t${it.rho}" }
             .toMutableList()
 
         template.addDescriptionLines(lines)
 
         getLinesWithCodeFileAsComments(lines, template)
 
-        FileUtils.writeLines(File(template.fileName + LocalDateTime.now()), lines)
+        val fullFileName = template.fileName + LocalDateTime.now()+".thr"
+        println("fullFileName = $fullFileName")
+        FileUtils.writeLines(File(fullFileName), lines)
 
-        val plotterGui = GuiPreviewer()
-        plotterGui.initialize()
-        plotterGui.showPreview(template.fileName, lines, false)
+//        val plotterGui = GuiPreviewer()
+//        plotterGui.initialize()
+//        plotterGui.showPreview(template.fileName, lines, false)
+//        plotterGui.showPreview(template.fileName, lines, false)
+    }
+
+    private fun computeSwitchFactor(copyNumber: Int, numberOfCopies: Int, numberOfSwitches: Int): Int {
+        return -1
+//        val value = copyNumber / (numberOfCopies / numberOfSwitches)
+//        return if (value % 2 == 0) 1 else -1
     }
 
     /**
@@ -77,13 +106,14 @@ class Generator {
      * me reproduce a track.  Therefore, this serializes the entire shape file as comments in the track!  To recover,
      * just copy/paste the comment into the file name and
      */
-    private fun getLinesWithCodeFileAsComments(lines: MutableList<String>, shape: Shape
-                                              ): List<String> {
+    private fun getLinesWithCodeFileAsComments(
+        lines: MutableList<String>, shape: Shape,
+    ): List<String> {
         val className = shape.javaClass.name.replace('.', '/')
         val fileName = "src/main/kotlin/$className.kt"
         val classFile = File(fileName)
-        val fileLines = FileUtils.readLines(classFile)
-                .map { "# $it" }
+        val fileLines = FileUtils.readLines(classFile, "UTF-8")
+            .map { "# $it" }
         lines.add("# source file name: $fileName")
         lines.addAll(fileLines)
         return lines
@@ -95,7 +125,7 @@ class Generator {
         val filteredPoints = mutableListOf<Point>()
         var previousPoint: Point? = null
         points.forEach { point ->
-            if (! point.isEqual(previousPoint)) {
+            if (!point.isEqual(previousPoint)) {
                 filteredPoints.add(point)
                 previousPoint = point
             }
@@ -129,8 +159,8 @@ class Generator {
         return when {
             points.size < 100 -> points
             else              -> (0..points.size - numberOfZeroPoints)
-                    .takeWhile { allNonZero(points, it, numberOfZeroPoints) }
-                    .map { points[it] }
+                .takeWhile { allNonZero(points, it, numberOfZeroPoints) }
+                .map { points[it] }
         }
     }
 
@@ -138,8 +168,8 @@ class Generator {
     private fun allNonZero(points: List<Point>, index: Int, numberOfZeroPoints: Int): Boolean {
 
         val allZero = (index..numberOfZeroPoints + index)
-                .all { points[it].isRhoPracticallyZero() }
-        return ! allZero
+            .all { points[it].isRhoPracticallyZero() }
+        return !allZero
     }
 
     /** If rho is < .05, call it 0.  Return a new point with the same theta, but 0 rho.
